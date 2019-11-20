@@ -2,23 +2,29 @@ import pprint
 import json
 import queue
 import subprocess
+import collections
 
-from typing import List, Set, Tuple, Optional, Dict, Any
+import subprocess
+import multiprocessing
+
+from typing import List, Set, Tuple, Optional, Dict, Any, Union, Iterable
 
 import scapy
 import scapy.packet
 import scapy.layers.dot11
+import scapy.layers.eap
 import scapy.utils
 import scapy.all
+import scapy.sendrecv
 
-import subprocess
+import tqdm
 
-class ScannerEpochResult:
+class ScanResult:
     def __init__(self):
         self.visible_aps = dict()
         self.visible_clients = dict()
-        self.client_ap_data_transfer = set()
-        self.client_authorised = set()
+        self.client_ap_data_transfer = list()
+        self.client_authorised = list()
         self.packet_lengths = list()
 
     def get(self) -> Dict[str, Any]:
@@ -59,6 +65,51 @@ class ScannerEpoch:
         return self.result_
 
 
+class EAPOLPayloadHeader:
+    def __init__(self, payload: bytes):
+        status_code = int.from_bytes(payload[1:3], byteorder='big')
+
+        self.is_pairwise = bool((status_code >> 3) & 1)
+        self.key_index = (status_code >> 4) & 3
+        self.is_install = bool((status_code >> 6) & 1)
+        self.is_ack = bool((status_code >> 7) & 1)
+        self.is_mic = bool((status_code >> 8) & 1)
+        self.is_secure = bool((status_code >> 9) & 1)
+        self.is_error = bool((status_code >> 10) & 1)
+        self.is_request = bool((status_code >> 11) & 1)
+
+        self.is_encrypted_key_data = bool((status_code >> 12) & 1)
+        self.is_smk_message = bool((status_code >> 13) & 1)
+
+    def _is_1_stage(self) -> bool:
+        return self.is_ack and not self.is_install and not self.is_mic and \
+            not self.is_secure and not self.is_request
+
+    def _is_2_stage(self) -> bool:
+        return self.is_mic and not self.is_install and not self.is_ack and \
+               not self.is_secure and not self.is_request
+
+    def _is_3_stage(self) -> bool:
+        return self.is_ack and self.is_install and self.is_mic and \
+               self.is_secure and self.is_encrypted_key_data
+
+    def _is_4_stage(self) -> bool:
+        return not self.is_ack and not self.is_install and self.is_mic and \
+               self.is_secure and not self.is_request
+
+    def get_stage(self) -> int:
+        if self._is_1_stage():
+            return 1
+        elif self._is_2_stage():
+            return 2
+        elif self._is_3_stage():
+            return 3
+        elif self._is_4_stage():
+            return 4
+        else:
+            return -1
+
+
 class Decoder:
     @staticmethod
     def get_encryption_type(packet: scapy.packet.Packet) -> Optional[str]:
@@ -72,7 +123,6 @@ class Decoder:
                 packet_payload = packet_payload.payload
 
             cap = packet.sprintf("{Dot11Beacon:%Dot11Beacon.cap%}{Dot11ProbeResp:%Dot11ProbeResp.cap%}").split('+')
-            print(cap)
             if 'privacy' in cap:  # WEP has been detected
                 return 'wep'
             else:  # No crypto
@@ -80,7 +130,7 @@ class Decoder:
         return None
 
     @staticmethod
-    def find_aps_info(pcap: List[scapy.packet.Packet]) -> Dict[str, Dict[str, str]]:
+    def find_aps_info(pcap: List[scapy.packet.Packet], channel: Optional[int]=None) -> Dict[str, Dict[str, str]]:
         result = {}
         for packet in pcap:
                 if packet.type == 0 and packet.subtype == 8:
@@ -96,7 +146,8 @@ class Decoder:
                     privacy = Decoder.get_encryption_type(packet)
                     result[ap_mac] = {
                         'essid': essid,
-                        'privacy': privacy
+                        'privacy': privacy,
+                        'channel': channel if channel is not None else -1
                     }
 
         return result
@@ -134,7 +185,7 @@ class Decoder:
     @staticmethod
     def find_data_transfers(pcap: List[scapy.packet.Packet],
                             aps_info: Dict[str, Dict[str, str]],
-                            clients_info: Dict[str, Dict[str, str]]):
+                            clients_info: Dict[str, Dict[str, str]]) -> List[Dict[str, str]]:
 
         k_zero_mac = '00:00:00:00:00:00'
         k_broadcast_mac = 'ff:ff:ff:ff:ff:ff'
@@ -164,123 +215,63 @@ class Decoder:
         return [ {'ap': ap, 'client': client} for ap, client in result ]
 
     @staticmethod
-    def decode_pcap(pcap: List[scapy.packet.Packet]) -> ScannerEpochResult:
-        result = ScannerEpochResult()
+    def find_client_authorisation(pcap: List[scapy.packet.Packet]):
+        auth_stages = collections.defaultdict(int)
+        for packet in pcap:
+            if packet.haslayer(scapy.layers.eap.EAPOL):
+                header = EAPOLPayloadHeader(packet[scapy.packet.Raw].load)
+                stage = header.get_stage()
+
+                client, ap = None, None
+                if stage == 1 or stage == 3:
+                    client, ap = packet.addr1, packet.addr2
+                elif stage == 2 or stage == 4:
+                    client, ap = packet.addr2, packet.addr1
+
+                auth_stages[(client, ap)] = max(auth_stages[(client, ap)], stage)
+
+        return [ { key[1]: {'client': key[0], 'stage': auth_stages[key]} }
+                 for key in auth_stages ]
+
+
+    @staticmethod
+    def decode_pcap(pcap: List[scapy.packet.Packet], channel: Optional[int] = None) -> ScanResult:
+        result = ScanResult()
 
         # find aps
-        result.visible_aps = Decoder.find_aps_info(pcap)
+        result.visible_aps = Decoder.find_aps_info(pcap, channel)
         result.visible_clients = Decoder.find_clients(pcap, result.visible_aps)
         result.client_ap_data_transfer = Decoder.find_data_transfers(pcap, result.visible_aps, result.visible_clients)
-
+        result.client_authorised = Decoder.find_client_authorisation(pcap)
         return result
 
 
 
-class Scanner:
 
-    def __init__(self, interface: str, timeout: int = 4, channel_list: list = None):
-        self.interface = interface
-        self.timeout = timeout
-        self.channel_list = channel_list
+def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
+                timeout: Union[int, float]):
 
-        self.ap_storage = storage.ApStorage()
-        self.clients_storage = storage.ClientStorage()
+    result = []
+    for channel in tqdm.tqdm(channels):
+        scanner = ScannerEpoch(interface=interface, channel=channel, timeout=timeout)
+        scanner.scan()
+        pcap = scanner.get_result()
+        result.append( Decoder.decode_pcap(pcap, channel) )
 
-        self.tmp_ap_storage = set() # set of pairs
-        self.tmp_clients_storage = set() # set of pairs
-        self.tmp_ap_check_list = set() # set of bytes
+    gathered_result = result[0]
 
-        self.k_zero_mac = b'00:00:00:00:00:00'
-        self.k_broadcast_mac = b'ff:ff:ff:ff:ff:ff'
+    for i in range(1, len(result)):
+        new_result = result[i]
 
-    @staticmethod
-    def check_ap_for_open(packet: scapy.all.Packet) -> bool:
-        if packet.haslayer(scapy.all.Dot11Elt):
-            packet_payload = packet[scapy.all.Dot11Elt]
-            while isinstance(packet_payload, scapy.all.Dot11Elt):
-                if packet_payload.ID == 48:  # WPA2 has been found
-                    return False
-                elif packet_payload.ID == 221 and packet_payload.info.startswith(b'\x00P\xf2\x01\x01\x00'):
-                    # WPA has been found
-                    return False
-                packet_payload = packet_payload.payload
+        gathered_result.visible_aps.update(new_result.visible_aps)
+        gathered_result.visible_clients.update(new_result.visible_clients)
+        gathered_result.client_ap_data_transfer.extend(new_result.client_ap_data_transfer)
+        gathered_result.client_authorised.extend(new_result.client_authorised)
+        gathered_result.packet_lengths.extend(new_result.packet_lengths)
 
-            cap = packet.sprintf("{Dot11Beacon:%Dot11Beacon.cap%}{Dot11ProbeResp:%Dot11ProbeResp.cap%}").split('+')
-            if 'privacy' in cap:  # WEP has been detected
-                return False
-            else:  # No crypto
-                return True
+    return gathered_result
 
-        return False
-
-    def sniff_handler(self, packet: scapy.all.Packet):
-        if packet.haslayer(scapy.all.Dot11):
-            i
-
-
-            if packet.type == 0 and packet.subtype == 8 and packet.addr2 not in self.tmp_ap_check_list and \
-                                Scanner.check_ap_for_open(packet):
-                # beacon frame
-                self.tmp_ap_storage.add((packet.addr2.encode(), packet.info))
-                self.tmp_ap_check_list.add(packet.addr2.encode())
-
-            if packet.type == 2:
-                # data transfer
-                addr1 = packet.addr1.encode()
-                addr2 = packet.addr2.encode()
-
-                if addr1 == self.k_broadcast_mac or addr2 == self.k_broadcast_mac:
-                    pass
-                elif addr1 == self.k_zero_mac or addr2 == self.k_zero_mac:
-                    pass
-                else:
-                    self.tmp_clients_storage.add((addr1, addr2))
-
-    def run(self, interface: str=None, channel_list: list=None, timeout: float=None):
-
-        if interface is None:
-            interface = self.interface
-
-        if timeout is None:
-            timeout = self.timeout
-
-        if channel_list is None:
-            channel_list = self.channel_list
-
-        if channel_list is None or not isinstance(channel_list, list) or len(channel_list) == 0:
-            with progressbar.ProgressBar(timeout, 'Default channel: ') as p:
-                scapy.all.sniff(iface=interface, timeout=timeout, prn=self.sniff_handler)
-
-        else:
-            # jump over channels
-            time_for_channel = timeout / len(channel_list)
-
-            for channel in channel_list:
-                subprocess.run(['iwconfig', interface, 'channel', str(channel)])
-                with progressbar.ProgressBar(time_for_channel, 'Channel {:2d}/{}: '.format(
-                            channel, progressbar.Formatter.format_list(channel_list))) as p:
-                    scapy.all.sniff(iface=interface, timeout=time_for_channel, prn=self.sniff_handler)
-
-        tmp_clients = set()
-
-        # reorder packets
-        for addr1, addr2 in self.tmp_clients_storage:
-            if addr1 in self.tmp_ap_check_list and not addr2 in self.tmp_ap_check_list:
-                tmp_clients.add((addr1, addr2))
-
-            if not addr1 in self.tmp_ap_check_list and addr2 in self.tmp_ap_check_list:
-                tmp_clients.add((addr2, addr1))
-
-        self.ap_storage.insert_pairs(list(self.tmp_ap_storage))
-        self.clients_storage.insert_pairs(list(tmp_clients))
-
-    def get_ap_storage(self):
-        return self.ap_storage
-
-    def get_clients_storage(self):
-        return self.clients_storage
 
 if __name__ == "__main__":
-    pcap = scapy.utils.rdpcap('sample.pcapng')
-    res = Decoder.decode_pcap(pcap)
+    res = CollectInfo('wlx00c0caa89fb5', list(range(1, 14)), timeout=2)
     pprint.pprint(res.get())
