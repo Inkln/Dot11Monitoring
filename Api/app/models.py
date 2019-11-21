@@ -4,7 +4,7 @@ from ..app import db
 class AP(db.Model):
     __tablename__ = 'aps'
     ap_mac = db.Column(db.String(32), primary_key=True, unique=True)
-    workspace = db.Column(db.String(256), primary_key=True)
+    workspace = db.Column(db.String(256), index=True)
 
     essid = db.Column(db.String(256), index=True)
     channel = db.Column(db.Integer, index=True)
@@ -21,7 +21,7 @@ class AP(db.Model):
 class Client(db.Model):
     __tablename__ = 'clients'
     client_mac = db.Column(db.String(32), primary_key=True, unique=True)
-    workspace = db.Column(db.String(256), primary_key=True)
+    workspace = db.Column(db.String(256), index=True)
 
     mac_vendor = db.Column(db.String(256), nullable=True)
     comment = db.Column(db.String(1024), nullable=True)
@@ -36,7 +36,7 @@ class Auth(db.Model):
     __tablename__ = 'authorisations'
     ap_mac = db.Column(db.String(32), db.ForeignKey('aps.ap_mac'), primary_key=True)
     client_mac = db.Column(db.String(32), db.ForeignKey('clients.client_mac'), primary_key=True)
-    workspace = db.Column(db.String(256), primary_key=True)
+    workspace = db.Column(db.String(256), index=True)
 
     stage = db.Column(db.Integer)
     tries = db.Column(db.Integer)
@@ -51,7 +51,7 @@ class Auth(db.Model):
 class DataTransfer(db.Model):
     ap_mac = db.Column(db.String(32), db.ForeignKey('aps.ap_mac'), primary_key=True)
     client_mac = db.Column(db.String(32), db.ForeignKey('clients.client_mac'), primary_key=True)
-    workspace = db.Column(db.String(256), primary_key=True)
+    workspace = db.Column(db.String(256), index=True)
 
     bytes = db.Column(db.Integer)
 
