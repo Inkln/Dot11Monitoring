@@ -25,7 +25,6 @@ class ScanResult:
         self.visible_clients = dict()
         self.client_ap_data_transfer = list()
         self.client_authorised = list()
-        self.packet_lengths = list()
 
     def get(self) -> Dict[str, Any]:
         result = {
@@ -33,8 +32,6 @@ class ScanResult:
             'visible_clients': self.visible_clients,
             'client_ap_data_transfer': self.client_ap_data_transfer,
             'client_authorised': self.client_authorised,
-            'packet_lengths': [{'client': client_mac, 'ap': ap_mac, 'packet_length': packet_length, 'packet_hash': packet_hash}
-                               for client_mac, ap_mac, packet_length, packet_hash in self.packet_lengths]
         }
         return result
 
@@ -190,8 +187,7 @@ class Decoder:
         k_zero_mac = '00:00:00:00:00:00'
         k_broadcast_mac = 'ff:ff:ff:ff:ff:ff'
 
-        result = set()
-
+        result = collections.defaultdict(int)
         for packet in pcap:
 
             if packet.type != 2 or packet.subtype < 8 or packet.subtype > 11:
@@ -207,16 +203,20 @@ class Decoder:
                 continue
 
             if addr1 in aps_info and addr2 in clients_info:
-                result.add((addr1, addr2))
+                result[(addr1, addr2)] += len(packet)
 
             if addr2 in aps_info and addr1 in clients_info:
-                result.add((addr2, addr1))
+                result[(addr2, addr1)] += len(packet)
 
-        return [ {'ap': ap, 'client': client} for ap, client in result ]
+        return [ {
+            'ap': ap,
+            'client': client,
+            'bytes': result[(ap, client)]
+        } for ap, client in result ]
 
     @staticmethod
-    def find_client_authorisation(pcap: List[scapy.packet.Packet]):
-        auth_stages = collections.defaultdict(int)
+    def find_client_authorisation(pcap: List[scapy.packet.Packet]) -> List[Dict[str, Union[str, int]]]:
+        auth_stages = {}
         for packet in pcap:
             if packet.haslayer(scapy.layers.eap.EAPOL):
                 header = EAPOLPayloadHeader(packet[scapy.packet.Raw].load)
@@ -228,10 +228,21 @@ class Decoder:
                 elif stage == 2 or stage == 4:
                     client, ap = packet.addr2, packet.addr1
 
-                auth_stages[(client, ap)] = max(auth_stages[(client, ap)], stage)
+                if not (client, ap) in auth_stages:
+                    auth_stages[(client, ap)] = (-1, -1)
 
-        return [ { key[1]: {'client': key[0], 'stage': auth_stages[key]} }
-                 for key in auth_stages ]
+                cur_stage, cur_count = auth_stages[(client, ap)]
+                if cur_stage == stage:
+                    auth_stages[(client, ap)] = (cur_stage, cur_count + 1)
+                elif cur_stage > stage:
+                    auth_stages[(client, ap)] = (cur_stage + 1, 1)
+
+        return [ {
+            'ap': key[1],
+            'client': key[0],
+            'stage': auth_stages[key][0],
+            'tries': auth_stages[key][1]
+        } for key in auth_stages ]
 
 
     @staticmethod
@@ -267,11 +278,11 @@ def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
         gathered_result.visible_clients.update(new_result.visible_clients)
         gathered_result.client_ap_data_transfer.extend(new_result.client_ap_data_transfer)
         gathered_result.client_authorised.extend(new_result.client_authorised)
-        gathered_result.packet_lengths.extend(new_result.packet_lengths)
 
     return gathered_result
 
 
 if __name__ == "__main__":
-    res = CollectInfo('wlx00c0caa89fb5', list(range(1, 14)), timeout=2)
+    #res = CollectInfo('wlx00c0caa89fb5', [5], timeout=15)
+    res = Decoder.decode_pcap(scapy.utils.rdpcap('auth.pcapng'))
     pprint.pprint(res.get())
