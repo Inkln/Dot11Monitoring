@@ -53,8 +53,6 @@ def receive_scanner_result():
                 exists.stage = stage
                 exists.tries = tries
 
-
-
     db.session.commit()
     return 'OK'
 

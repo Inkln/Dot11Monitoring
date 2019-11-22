@@ -5,6 +5,7 @@ import subprocess
 import collections
 
 import subprocess
+import requests
 import multiprocessing
 
 from typing import List, Set, Tuple, Optional, Dict, Any, Union, Iterable
@@ -111,8 +112,8 @@ class Decoder:
     @staticmethod
     def get_encryption_type(packet: scapy.packet.Packet) -> Optional[str]:
         if packet.haslayer(scapy.layers.dot11.Dot11Elt):
-            packet_payload = packet[scapy.all.Dot11Elt]
-            while isinstance(packet_payload, scapy.all.Dot11Elt):
+            packet_payload = packet[scapy.layers.dot11.Dot11Elt]
+            while isinstance(packet_payload, scapy.layers.dot11.Dot11Elt):
                 if packet_payload.ID == 48:
                     return 'wpa2'
                 elif packet_payload.ID == 221 and packet_payload.info.startswith(b'\x00P\xf2\x01\x01\x00'):
@@ -124,7 +125,7 @@ class Decoder:
                 return 'wep'
             else:  # No crypto
                 return 'open'
-        return None
+        return 'unknown'
 
     @staticmethod
     def find_aps_info(pcap: List[scapy.packet.Packet], channel: Optional[int]=None) -> Dict[str, Dict[str, str]]:
@@ -234,8 +235,8 @@ class Decoder:
                 cur_stage, cur_count = auth_stages[(client, ap)]
                 if cur_stage == stage:
                     auth_stages[(client, ap)] = (cur_stage, cur_count + 1)
-                elif cur_stage > stage:
-                    auth_stages[(client, ap)] = (cur_stage + 1, 1)
+                elif cur_stage < stage:
+                    auth_stages[(client, ap)] = (stage, 1)
 
         return [ {
             'ap': key[1],
@@ -255,8 +256,6 @@ class Decoder:
         result.client_ap_data_transfer = Decoder.find_data_transfers(pcap, result.visible_aps, result.visible_clients)
         result.client_authorised = Decoder.find_client_authorisation(pcap)
         return result
-
-
 
 
 def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
@@ -284,5 +283,7 @@ def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
 
 if __name__ == "__main__":
     #res = CollectInfo('wlx00c0caa89fb5', [5], timeout=15)
-    res = Decoder.decode_pcap(scapy.utils.rdpcap('auth.pcapng'))
-    pprint.pprint(res.get())
+    res = Decoder.decode_pcap(scapy.utils.rdpcap('auth.pcapng')).get()
+    res['workspace'] = 'dev_space'
+    pprint.pprint(res)
+    requests.post('http://localhost:5000/add_result', json=res)
