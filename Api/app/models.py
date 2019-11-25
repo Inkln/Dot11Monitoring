@@ -1,6 +1,18 @@
 from ..app import db
 
 
+# auth models
+class User(db.Model):
+    username = db.Column(db.String(128), primary_key=True, unique=True)
+    email = db.Column(db.String(256), nullable=True)
+    password_hash = db.Column(db.String(128), nullable=False)
+
+    is_collector = db.Column(db.Boolean, default=False)
+    is_viewer = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
+
+
+# dot11 models
 class Auth(db.Model):
     ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), primary_key=True)
     client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), primary_key=True)

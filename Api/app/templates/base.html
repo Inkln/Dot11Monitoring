@@ -1,0 +1,33 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+    {{super()}}
+
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+{% endblock %}
+
+{% block content %}
+ <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand " href="#">802.11 monitor</a>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container">
+   {% block page_content %}{% endblock %}
+</div>
+
+<div class="container">
+    <div class="row align-items-end">
+        <div class="col-4">
+            You can view source code <a href="https://github.com/Avi2011class/Dot11Monitoring">here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
