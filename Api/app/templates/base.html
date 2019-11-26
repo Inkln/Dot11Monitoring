@@ -55,6 +55,14 @@
         <div class="navbar-header">
             <a class="navbar-brand" href="#">802.11 monitor</a>
         </div>
+        {% if current_user.is_authenticated %}
+        <div class="nav navbar-nav navbar-right navbar-brand">
+            Welcome, {{ current_user.username }}
+        </div>
+         <div class="nav navbar-nav navbar-right">
+               <a href="/logout" class="navbar-brand"><strong>Logout</strong></a>
+         </div>
+        {% endif %}
     </div>
 </nav>
 
