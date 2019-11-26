@@ -1,42 +1,46 @@
-from ..app import db
-
+from ..app import db, login
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # auth models
-class User(db.Model):
-    username = db.Column(db.String(128), primary_key=True, unique=True)
-    email = db.Column(db.String(256), nullable=True)
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    username = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
 
     is_collector = db.Column(db.Boolean, default=False)
     is_viewer = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 
 # dot11 models
 class Auth(db.Model):
-    ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), primary_key=True)
-    client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), primary_key=True)
-    workspace = db.Column(db.String(256), primary_key=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), index=True)
+    client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), index=True)
+    workspace = db.Column(db.String(256), index=True)
 
     stage = db.Column(db.Integer)
     tries = db.Column(db.Integer)
-
-    # ap = db.relationship(Ap, backref="auth")
-    # client = db.relationship(Client, backref="auth")
 
     def __repr__(self):
         return '<Auth {}>'.format(self.ap_mac, self.client_mac)
 
 
 class DataTransfer(db.Model):
-    ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), primary_key=True)
-    client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), primary_key=True)
-    workspace = db.Column(db.String(256), primary_key=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), index=True)
+    client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), index=True)
+    workspace = db.Column(db.String(256), index=True)
 
     bytes = db.Column(db.Integer)
-
-    # ap = db.relationship("Ap", backref="transfer")
-    # client = db.relationship("Client", backref="transfer")
 
     def __repr__(self):
         return '<Transfer from {} to >'.format(self.ap_mac, self.client_mac)
@@ -72,3 +76,8 @@ class Client(db.Model):
 
     def __repr__(self):
         return '<Client {}>'.format(self.client_mac)
+
+
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))

@@ -280,10 +280,9 @@ def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
 
     return gathered_result
 
-
 if __name__ == "__main__":
-    #res = CollectInfo('wlx00c0caa89fb5', [5], timeout=15)
-    res = Decoder.decode_pcap(scapy.utils.rdpcap('auth.pcapng')).get()
+    res = CollectInfo('wlp2s0mon', [1,2,3,4,5,6,7,8,9,10,11,12], timeout=2).get()
+    #res = Decoder.decode_pcap(scapy.utils.rdpcap('auth.pcapng')).get()
     res['workspace'] = 'dev_space'
     pprint.pprint(res)
-    requests.post('http://localhost:5000/add_result', json=res)
+    #requests.post('http://localhost:5000/add_result', json=res)

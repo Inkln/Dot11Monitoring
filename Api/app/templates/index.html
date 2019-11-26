@@ -3,47 +3,56 @@
 {% block page_content %}
 <div class="container">
     <div class="row justify-content-around">
-        <div class="col-xs-6" style="border:1px solid #cecece;">
-            <h2>Login</h2>
-            <form class="form form-vertical bg-light" action="/login" method="post" novalidate>
-                {{ form_login.hidden_tag() }}
-                <p>
-                    {{ form_login.username.label }}<br>
-                    {{ form_login.username(size=32, class="form-control") }}
-                </p>
-                <p>
-                    {{ form_login.password.label }}<br>
-                    {{ form_login.password(size=32, class="form-control") }}
-                </p>
-                <p>{{ form_login.remember_me(class="form-check-input") }}
-                    {{ form_login.remember_me.label(class="form-check-label") }}</p>
-                <p>{{ form_login.submit(class="btn btn-success btn-block") }}</p>
-            </form>
+        <div class="col-xs-6 m-3">
+            <div class="container border border-dark shadow rounded bg-light">
+                <div class="container p-3">
+                    <h2>Login</h2>
+                    <form class="form form-vertical" action="/login" method="post" novalidate>
+                        {{ form_login.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form_login.username.label }}<br>
+                            {{ form_login.username(size=32, class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_login.password.label }}<br>
+                            {{ form_login.password(size=32, class="form-control") }}
+                        </div>
+                        <div class="form-check">
+                            {{ form_login.remember_me(class="form-check-input") }}
+                            {{ form_login.remember_me.label(class="form-check-label") }}
+                        </div>
+                        {{ form_login.submit(class="btn btn-success btn-lg m-3 shadow") }}
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="col-xs-6" style="border:1px solid #cecece;">
-            <h2>Register</h2>
-            <form class="form form-vertical bg-light" action="/register" method="post" novalidate>
-                {{ form_register.hidden_tag() }}
-                <p>
-                    {{ form_register.username.label }}<br>
-                    {{ form_register.username(size=32, class="form-control") }}
-                </p>
-                <p>
-                    {{ form_register.email.label }}<br>
-                    {{ form_register.email(size=32, class="form-control") }}
-                </p>
-                <p>
-                    {{ form_register.password.label }}<br>
-                    {{ form_register.password(size=32, class="form-control") }}
-                </p>
-                <p>
-                    {{ form_register.repeat_password.label }}<br>
-                    {{ form_register.repeat_password(size=32, class="form-control") }}
-                </p>
-                <p>{{ form_register.remember_me(class_="form-check-input") }}
-                    {{ form_register.remember_me.label(class="form-check-label") }}</p>
-                <p>{{ form_register.submit(class="btn btn-success btn-block") }}</p>
-            </form>
+        <div class="col-xs-6 m-3">
+            <div class="container border border-dark shadow rounded bg-light">
+                <div class="container p-3">
+                    <h2>Register</h2>
+                    <form class="form form-vertical" action="/register" method="post" novalidate>
+                        {{ form_register.hidden_tag() }}
+                        {{ form_register.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form_register.username.label }}<br>
+                            {{ form_register.username(size=32, class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_register.password.label }}<br>
+                            {{ form_register.password(size=32, class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_register.repeat_password.label }}<br>
+                            {{ form_register.repeat_password(size=32, class="form-control") }}
+                        </div>
+                        <div class="form-check">
+                            {{ form_register.remember_me(class="form-check-input") }}
+                            {{ form_register.remember_me.label(class="form-check-label") }}
+                        </div>
+                        {{ form_register.submit(class="btn btn-success btn-lg m-3 shadow") }}
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
