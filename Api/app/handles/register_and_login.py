@@ -28,3 +28,21 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/register', methods=['POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main_page'))
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!', 'Message')
+        login_user(user, remember=form.remember_me.data)
+        return redirect(url_for('main_page'))
+
+    flash('Registration failed', 'Error')
+    return redirect(url_for('index'))
