@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<nav xmlns="http://www.w3.org/1999/html">
+    <div class="nav nav-tabs" id="nav-tab2" role="tablist">
+        <a class="nav-item nav-link active" id="nav-users-tab" data-toggle="tab" href="#nav-users" role="tab"
+           aria-controls="nav-users" aria-selected="true">Users</a>
+        <a class="nav-item nav-link" id="nav-ap-tab" data-toggle="tab" href="#nav-ap" role="tab"
+           aria-controls="nav-ap" aria-selected="false">Access points</a>
+        <a class="nav-item nav-link" id="nav-client-tab" data-toggle="tab" href="#nav-client" role="tab"
+           aria-controls="nav-client" aria-selected="false">Clients</a>
+        <a class="nav-item nav-link" id="nav-datatransfer-tab" data-toggle="tab" href="#nav-datatransfer" role="tab"
+           aria-controls="nav-datatransfer" aria-selected="false">Data transfers</a>
+        <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab"
+           aria-controls="nav-auth" aria-selected="false">Athorisations</a>
+    </div>
+</nav>
+
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
+        <table class="table table-striped">
+            <thead class="bg-light">
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Password hash</th>
+                <th scope="col">Is viewer</th>
+                <th scope="col">Is collector</th>
+                <th scope="col">Is admin</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <form action="/admin" method="post" novalidate>
+                    <th scope="row"> {{ user.id }}</th>
+                    <td> <input type="text" name="username" size=10 class="form-control-sm" value="{{ user.username }}"> </td>
+                    <td> <input type="email" name="email" size=10 class="form-control-sm" value="{{ user.email }}"> </td>
+                    <td> <input type="password" name="password" size=10 class="form-control-sm" value="{{ user.password_hash }}"> </td>
+                    <td> <input type="checkbox" name="is_viewer" class="form-control form-control-sm" {% if user.is_viewer %} checked {% endif %}>  </td>
+                    <td> <input type="checkbox" name="is_collector" class="form-control form-control-sm" {% if user.is_collector %} checked {% endif %}> </td>
+                    <td> <input type="checkbox" name="is_admin" class="form-control form-control-sm" {% if user.is_admin %} checked {% endif %}> </td>
+                    <td> <input type="submit" name="action" class="btn btn-sm btn-success" value="Edit and save"> </td>
+                    <td> <input type="submit" name="action" class="btn btn-sm btn-danger" value="Delete"> </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+    <div class="tab-pane fade" id="nav-ap" role="tabpanel" aria-labelledby="nav-ap-tab">
+         <table class="table table-striped">
+            <thead class="bg-light">
+            <tr>
+                <th scope="row">Id</th>
+                <th>Mac address</th>
+                <th>Device vendor</th>
+                <th>Workspace</th>
+                <th>Essid</th>
+                <th>Channel</th>
+                <th>Privacy</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ap in aps %}
+            <tr>
+                <th> {{ ap.id }} </th>
+                <th> {{ ap.ap_mac }}</th>
+                <th> {{ ap.mac_vendor }} </th>
+                <th> {{ ap.workspace }}</th>
+                <th> {{ ap.essid }}</th>
+                <th> {{ ap.channel }}</th>
+                <th> {{ ap.privacy }}</th>
+                <th> {{ ap.comment }}</th>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="tab-pane fade" id="nav-client" role="tabpanel" aria-labelledby="nav-client-tab">
+        <table class="table table-striped">
+            <thead class="bg-light">
+            <tr>
+                <th scope="row">Id</th>
+                <th>Mac address</th>
+                <th>Device vendor</th>
+                <th>Workspace</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for client in clients %}
+            <tr>
+                <th> {{ client.id }} </th>
+                <th> {{ client.client_mac }} </th>
+                <th> {{ client.mac_vendor }} </th>
+                <th> {{ client.workspace }} </th>
+                <th> {{ client.comment }} </th>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="tab-pane fade" id="nav-datatransfer" role="tabpanel" aria-labelledby="nav-datatransfer-tab">
+         <table class="table table-striped">
+            <thead class="bg-light">
+            <tr>
+                <th scope="row">Id</th>
+                <th>Ap mac address</th>
+                <th>Client mac address</th>
+                <th>Workspace</th>
+                <th>Bytes</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for dt in datatransfers %}
+            <tr>
+                <th> {{ dt.id }} </th>
+                <th> {{ dt.ap_mac }} </th>
+                <th> {{ dt.client_mac }} </th>
+                <th> {{ dt.workspace }} </th>
+                <th> {{ dt.bytes }} </th>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="tab-pane fade" id="nav-auth" role="tabpanel" aria-labelledby="nav-auth-tab">
+        <table class="table table-striped">
+            <thead class="bg-light">
+            <tr>
+                <th scope="row">Id</th>
+                <th>Ap mac address</th>
+                <th>Client mac address</th>
+                <th>Workspace</th>
+                <th>Tries</th>
+                <th>Best stage (of 4)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for au in auths %}
+            <tr>
+                <th> {{ au.id }} </th>
+                <th> {{ au.ap_mac }} </th>
+                <th> {{ au.client_mac }} </th>
+                <th> {{ au.workspace }} </th>
+                <th> {{ au.tries }} </th>
+                <th> {{ au.stage }} </th>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

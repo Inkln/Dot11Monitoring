@@ -2,6 +2,7 @@ from ..app import db, login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 # auth models
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -48,9 +49,11 @@ class DataTransfer(db.Model):
 
 class Ap(db.Model):
     # __tablename__ = 'aps'
-    ap_mac = db.Column(db.String(32), primary_key=True, unique=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    ap_mac = db.Column(db.String(32), index=True, unique=True)
     workspace = db.Column(db.String(256), primary_key=True)
 
+    mac_vendor = db.Column(db.String(256), nullable=True)
     essid = db.Column(db.String(256), index=True)
     channel = db.Column(db.Integer, index=True)
     privacy = db.Column(db.String(8), index=True)
@@ -65,7 +68,8 @@ class Ap(db.Model):
 
 class Client(db.Model):
     # __tablename__ = 'clients'
-    client_mac = db.Column(db.String(32), primary_key=True, unique=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    client_mac = db.Column(db.String(32), index=True, unique=True)
     workspace = db.Column(db.String(256), primary_key=True)
 
     mac_vendor = db.Column(db.String(256), nullable=True)

@@ -4,7 +4,7 @@ from flask import request, abort, config
 
 from ..models import Ap, Client, Auth, DataTransfer
 from ...app import app, db
-
+from ...app import vendors_provider
 
 @app.route('/add_result', methods=['POST'])
 def receive_scanner_result():
@@ -16,13 +16,15 @@ def receive_scanner_result():
         exists = db.session.query(Ap).filter_by(ap_mac=ap_mac, workspace=workspace).first()
         if not exists:
             ap = Ap(ap_mac=ap_mac, channel=data['channel'], essid=data['essid'],
-                    privacy=data['privacy'], workspace=workspace, comment=None)
+                    privacy=data['privacy'], workspace=workspace, comment=None,
+                    mac_vendor=vendors_provider.get_vendor_info(ap_mac))
             db.session.add(ap)
 
     for client_mac in result['visible_clients']:
         exists = db.session.query(Client).filter_by(client_mac=client_mac, workspace=workspace).first()
         if not exists:
-            client = Client(client_mac=client_mac, workspace=workspace)
+            client = Client(client_mac=client_mac, mac_vendor=vendors_provider.get_vendor_info(client_mac),
+                            workspace=workspace)
             db.session.add(client)
 
     for transfer in result['client_ap_data_transfer']:
