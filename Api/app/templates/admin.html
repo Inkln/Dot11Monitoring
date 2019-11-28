@@ -24,7 +24,6 @@
             <tr>
                 <th scope="col">id</th>
                 <th scope="col">Username</th>
-                <th scope="col">Email</th>
                 <th scope="col">Password hash</th>
                 <th scope="col">Is viewer</th>
                 <th scope="col">Is collector</th>
@@ -37,9 +36,9 @@
             {% for user in users %}
             <tr>
                 <form action="/admin" method="post" novalidate>
+                    <input name="id" type="hidden" value="{{ user.id }}">
                     <th scope="row"> {{ user.id }}</th>
                     <td> <input type="text" name="username" size=10 class="form-control-sm" value="{{ user.username }}"> </td>
-                    <td> <input type="email" name="email" size=10 class="form-control-sm" value="{{ user.email }}"> </td>
                     <td> <input type="password" name="password" size=10 class="form-control-sm" value="{{ user.password_hash }}"> </td>
                     <td> <input type="checkbox" name="is_viewer" class="form-control form-control-sm" {% if user.is_viewer %} checked {% endif %}>  </td>
                     <td> <input type="checkbox" name="is_collector" class="form-control form-control-sm" {% if user.is_collector %} checked {% endif %}> </td>
@@ -71,7 +70,7 @@
             <tr>
                 <th> {{ ap.id }} </th>
                 <th> {{ ap.ap_mac }}</th>
-                <th> {{ ap.mac_vendor }} </th>
+                <th> {{ ap.mac_vendor[:40] }} </th>
                 <th> {{ ap.workspace }}</th>
                 <th> {{ ap.essid }}</th>
                 <th> {{ ap.channel }}</th>
@@ -97,7 +96,7 @@
             <tr>
                 <th> {{ client.id }} </th>
                 <th> {{ client.client_mac }} </th>
-                <th> {{ client.mac_vendor }} </th>
+                <th> {{ client.mac_vendor[:40] }} </th>
                 <th> {{ client.workspace }} </th>
                 <th> {{ client.comment }} </th>
             </tr>
