@@ -9,24 +9,26 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from Crypto.Random import get_random_bytes
 from base64 import b64encode
 
-from .utils.vendors import OfflineVendorsParser
+
 
 app = Flask(__name__)
-
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
 
-
+from .utils.vendors import OfflineVendorsParser
 vendors_provider = OfflineVendorsParser()
 
-login.login_view = 'index'
-
 from ..app import models
+
+from .utils.graph_builder import GraphBuilder
+graph_builder = GraphBuilder(db=db)
+
 from ..app import routes
 
+login.login_view = 'index'
 
 @app.before_first_request
 def insert_admin_into_db():

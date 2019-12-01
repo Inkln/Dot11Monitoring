@@ -56,8 +56,6 @@ def admin():
             User.query.filter_by(id=id).delete()
             db.session.commit()
 
-
-
         return redirect('/admin')
 
     else:
