@@ -59,6 +59,7 @@ class ScannerEpoch:
 
         is_dot11 = lambda packet: packet.haslayer(scapy.layers.dot11.Dot11)
         self.result_ = scapy.all.sniff(timeout=self.timeout_, store=True, iface=self.interface_, lfilter=is_dot11)
+        return self
 
     def get_result(self) -> List[scapy.packet.Packet]:
         return self.result_
@@ -289,11 +290,15 @@ def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
 
 if __name__ == "__main__":
     pcap = scapy.utils.rdpcap('/home/alexander/ctf/dump/arctic-01.cap')
-    step = 5000
-    for i in range(0, len(pcap) - step, step):
-        cap = pcap[i:i+step]
-        res = Decoder.decode_pcap(cap).get()
-        res['workspace'] = 'dev_space'
-        pprint.pprint(res)
-        requests.post('http://localhost:5000/add_result', json=res)
-        time.sleep(1)
+    #step = 5000
+    #for i in range(0, len(pcap) - step, step):
+    while True:
+        for channel in range(1, 14):
+            #pcap = ScannerEpoch('wlx00c0caa89fb5', channel, 4).scan().get_result()
+            res = Decoder.decode_pcap(pcap).get()
+            #res = Decoder.decode_pcap(cap).get()
+            res['workspace'] = 'dev_space'
+            pprint.pprint(res)
+            requests.post('http://localhost:5000/add_result', json=res)
+            time.sleep(1)
+            break
