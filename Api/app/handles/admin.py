@@ -60,3 +60,4 @@ def admin():
 
     else:
         return redirect('/admin')
+

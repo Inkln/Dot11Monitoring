@@ -24,8 +24,10 @@ class User(UserMixin, db.Model):
 # dot11 models
 class Auth(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), index=True)
-    client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), index=True)
+    # ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), index=True)
+    ap_mac = db.Column(db.String(32), index=True)
+    # client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), index=True)
+    client_mac = db.Column(db.String(32), index=True)
     workspace = db.Column(db.String(256), index=True)
 
     stage = db.Column(db.Integer)
@@ -37,8 +39,10 @@ class Auth(db.Model):
 
 class DataTransfer(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), index=True)
-    client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), index=True)
+    # ap_mac = db.Column(db.String(32), db.ForeignKey('ap.ap_mac'), index=True)
+    ap_mac = db.Column(db.String(32), index=True)
+    # client_mac = db.Column(db.String(32), db.ForeignKey('client.client_mac'), index=True)
+    client_mac = db.Column(db.String(32), index=True)
     workspace = db.Column(db.String(256), index=True)
 
     bytes = db.Column(db.Integer)
@@ -50,7 +54,7 @@ class DataTransfer(db.Model):
 class Ap(db.Model):
     # __tablename__ = 'aps'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    ap_mac = db.Column(db.String(32), index=True, unique=True)
+    ap_mac = db.Column(db.String(32), index=True)
     workspace = db.Column(db.String(256), primary_key=True)
 
     mac_vendor = db.Column(db.String(256), nullable=True)
@@ -59,8 +63,8 @@ class Ap(db.Model):
     privacy = db.Column(db.String(8), index=True)
     comment = db.Column(db.String(1024), nullable=True)
 
-    auths = db.relationship(Auth, backref='aps', lazy='dynamic')
-    transfers = db.relationship(DataTransfer, backref='aps', lazy='dynamic')
+    # auths = db.relationship(Auth, backref='aps', lazy='dynamic')
+    # transfers = db.relationship(DataTransfer, backref='aps', lazy='dynamic')
 
     def __repr__(self):
         return '<Ap {}:{}>'.format(self.ap_mac, self.essid)
@@ -69,14 +73,14 @@ class Ap(db.Model):
 class Client(db.Model):
     # __tablename__ = 'clients'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    client_mac = db.Column(db.String(32), index=True, unique=True)
+    client_mac = db.Column(db.String(32), index=True)
     workspace = db.Column(db.String(256), primary_key=True)
 
     mac_vendor = db.Column(db.String(256), nullable=True)
     comment = db.Column(db.String(1024), nullable=True)
 
-    auths = db.relationship(Auth, backref='clients', lazy='dynamic')
-    transfers = db.relationship(DataTransfer, backref='clients', lazy='dynamic')
+    # auths = db.relationship(Auth, backref='clients', lazy='dynamic')
+    # transfers = db.relationship(DataTransfer, backref='clients', lazy='dynamic')
 
     def __repr__(self):
         return '<Client {}>'.format(self.client_mac)

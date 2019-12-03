@@ -6,6 +6,7 @@ import collections
 
 import subprocess
 import requests
+import time
 import multiprocessing
 
 from typing import List, Set, Tuple, Optional, Dict, Any, Union, Iterable
@@ -191,7 +192,13 @@ class Decoder:
         result = collections.defaultdict(int)
         for packet in pcap:
 
-            if packet.type != 2 or packet.subtype != 0x28:
+            # if 'd8:ce:3a:8c:8e:42' in [packet.addr1, packet.addr2]:
+            #    print(packet.type, packet.subtype)
+
+            #if packet.type != 2 or packet.subtype < 0x20 or packet.subtype > 0x2f:
+            #    continue
+
+            if not packet.haslayer(scapy.layers.dot11.Dot11QoS) or len(packet) < 250:
                 continue
 
             addr1 = packet.addr1
@@ -281,8 +288,12 @@ def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
     return gathered_result
 
 if __name__ == "__main__":
-    #res = CollectInfo('wlp2s0mon', [1,2,3,4,5,6,7,8,9,10,11,12,13], timeout=4).get()
-    res = Decoder.decode_pcap(scapy.utils.rdpcap('auth.pcapng')).get()
-    res['workspace'] = 'dev_space'
-    pprint.pprint(res)
-    requests.post('http://localhost:5000/add_result', json=res)
+    pcap = scapy.utils.rdpcap('/home/alexander/ctf/dump/arctic-01.cap')
+    step = 5000
+    for i in range(0, len(pcap) - step, step):
+        cap = pcap[i:i+step]
+        res = Decoder.decode_pcap(cap).get()
+        res['workspace'] = 'dev_space'
+        pprint.pprint(res)
+        requests.post('http://localhost:5000/add_result', json=res)
+        time.sleep(1)

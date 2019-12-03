@@ -20,48 +20,40 @@ class GraphBuilder:
     def get(self, workspace: str):
         ap_list = self._db.session.query(Ap).filter_by(workspace=workspace).all()
         ap_nodes = [{
-            'id': index,
-            'label': '{}\n({})'.format(ap.essid, ap.ap_mac),
-            'group': 'AP'
-        } for index, ap in enumerate(ap_list)]
+            'id': ap.ap_mac,
+            'label': '{}\n({})'.format(ap.ap_mac, ap.essid),
+            'group': 'ap'
+        } for ap in ap_list]
 
         client_list = self._db.session.query(Client).filter_by(workspace=workspace).all()
         client_nodes = [{
-            'id': index + len(ap_nodes),
+            'id': client.client_mac,
             'label': '{}\n({})'.format(client.client_mac, client.mac_vendor),
-            'group': 'Client'
-        } for index, client in enumerate(client_list)]
-
+            'group': 'client'
+        } for client in client_list]
         result_nodes = ap_nodes + client_nodes
-
-
-        mac_to_id = {}
-        id_to_mac = {}
-        for index, ap in enumerate(ap_list):
-            mac_to_id[ap.ap_mac] = index
-            id_to_mac[index] = ap.ap_mac
-
-        for index, client in enumerate(client_list):
-            mac_to_id[client.client_mac] = index + len(ap_list)
-            id_to_mac[index + len(ap_list)] = client.client_mac
 
         result_edges = []
 
         transfer_list = self._db.session.query(DataTransfer).filter_by(workspace=workspace).all()
         for transfer in transfer_list:
             result_edges.append({
-                'from': mac_to_id[transfer.ap_mac],
-                'to': mac_to_id[transfer.client_mac],
-                'value': transfer.bytes
+                'id': transfer.ap_mac + transfer.client_mac,
+                'to': transfer.ap_mac,
+                'from': transfer.client_mac,
+                'value': transfer.bytes,
+                'title': '{}KB'.format(transfer.bytes // 1024)
             })
 
         for ap1, ap2 in itertools.combinations(ap_list, 2):
             if ap1.essid == ap2.essid:
                 result_edges.append({
-                    'from': mac_to_id[ap1.ap_mac],
-                    'to': mac_to_id[ap2.ap_mac],
+                    'id': min(ap1.ap_mac, ap2.ap_mac) + max(ap1.ap_mac, ap2.ap_mac),
+                    'from': ap1.ap_mac,
+                    'to': ap2.ap_mac,
                     'dashes': True,
-                    'value': 1
+                    'value': 1,
+                    'length': 2
                 })
 
         result = {

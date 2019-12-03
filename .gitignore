@@ -6,6 +6,7 @@
 temp/*
 dist/*
 build/*
+Api/migrations/*
 docs/site/*
 docs/sources/*
 docs/theme/fonts/*
