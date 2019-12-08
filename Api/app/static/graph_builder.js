@@ -1,7 +1,9 @@
-var networks_global = new Map();
+var network;
 var data_global = new Map();
+var workspaces_list = [];
+var current_workspace = "";
 
-let start_network = (async (workspace, container_element_id) => {
+let init_network = (async (container_element_id) => {
     let container = document.getElementById(container_element_id);
     let options = {
         nodes: {
@@ -18,24 +20,22 @@ let start_network = (async (workspace, container_element_id) => {
             }
         }
     };
+
+    let workspace = await (async () => {})()
+        .then(update_workspaces_list)
+        .then(get_selected_workspace);
+
     data = {nodes: new vis.DataSet(), edges: new vis.DataSet()};
     data_global.set(workspace, data);
-    networks_global.set(workspace, new vis.Network(container, data, options));
+    network = new vis.Network(container, data, options);
 
-    update_graph(workspace);
+    update();
     timer_id = setInterval(() => {
-        update_graph(workspace);
+        update();
     }, 5000);
     setTimeout(() => {
         clearInterval(timer_id);
     }, 600000);
-});
-
-let schedule = (async (callback, timeout) => {
-    callback();
-    setTimeout(() => {}, timeout).then(
-        () => { schedule(callback, timeout); }
-    );
 });
 
 let fetch_graph = (async (workspace) => {
@@ -50,6 +50,13 @@ let fetch_graph = (async (workspace) => {
 
 let update_graph = (async (workspace) => {
     graph_structure = await fetch_graph(workspace);
+    if (!data_global.has(workspace)) {
+        data_global.set(workspace, {nodes: new vis.DataSet(), edges: new vis.DataSet()});
+    }
+    if (workspace !== current_workspace) {
+        network.setData(data_global.get(workspace));
+        current_workspace = workspace;
+    }
     await Promise.all([
         (async (new_edges) => {
             data_global.get(workspace).edges.update(new_edges);
@@ -60,7 +67,42 @@ let update_graph = (async (workspace) => {
     ]);
 });
 
+let fetch_workspaces_list = (async() => {
+   response = await fetch("/get_workspaces",
+            {
+                method: "POST"
+            });
+        json = await response.json();
+        return json.data;
+});
+
+let update_workspaces_list  = (async () => {
+   let actual_workspaces_list = await fetch_workspaces_list();
+   let parent = document.getElementById("active_workspace");
+   for (const element of actual_workspaces_list) {
+       if (!workspaces_list.includes(element)) {
+           workspaces_list.push(element);
+           let new_option = document.createElement("option");
+           new_option.value = element;
+           new_option.text = element;
+           parent.appendChild(new_option);
+       }
+   }
+});
+
+let get_selected_workspace = (async () => {
+   let parent = document.getElementById("active_workspace");
+   return result = parent.options[parent.selectedIndex].value;
+});
+
+let update = (async () => {
+    return (async () => {})()
+        .then(update_workspaces_list)
+        .then(get_selected_workspace)
+        .then(update_graph);
+});
+
 window.addEventListener("load", () => {
-    start_network("dev_space", "network-graph");
+    init_network("network-graph");
 });
 //*/

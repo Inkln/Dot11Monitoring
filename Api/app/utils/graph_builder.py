@@ -37,6 +37,8 @@ class GraphBuilder:
 
         transfer_list = self._db.session.query(DataTransfer).filter_by(workspace=workspace).all()
         for transfer in transfer_list:
+            if transfer.bytes < 1100:
+                continue
             result_edges.append({
                 'id': transfer.ap_mac + transfer.client_mac,
                 'to': transfer.ap_mac,

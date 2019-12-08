@@ -3,13 +3,10 @@ from .config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from flask_admin import Admin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from Crypto.Random import get_random_bytes
 from base64 import b64encode
-
-
 
 app = Flask(__name__)
 app.config.from_object(Config)

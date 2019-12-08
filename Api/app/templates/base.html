@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='bootstrap.min.css') }}">
+
+    <!--
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
@@ -16,10 +18,13 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
-    <!--
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.js"></script>
-    -->
+   
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    -->
+    <script src="/static/vd5.min.js"></script>
+    <script src="/static/jquery-3.3.1.slim.min.js"></script>
+    <script src="/static/popper.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
 
     {% if title %}
     <title>{{ title }} - 802.11 monitor</title>
@@ -86,6 +91,8 @@
 
 
         <div class="navbar-header navbar-nav justify-content-end flex-row">
+
+            {% block head_content %}{% endblock %}
 
             <div class="navbar-header navbar-nav ml-auto navbar-brand">
                 <a href="/main_page" class="btn btn-outline-success navbar-brand">Main page</a>

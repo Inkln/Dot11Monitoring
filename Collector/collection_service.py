@@ -253,6 +253,16 @@ class Decoder:
             'tries': auth_stages[key][1]
         } for key in auth_stages ]
 
+    @staticmethod
+    def find_active_clients(data_transfers: List[Dict[str, str]], auth: List[Dict[str, Union[str, int]]]):
+        result = {}
+        for transfer in data_transfers:
+            result[transfer["client"]] = {}
+
+        for auth in auth:
+            result[auth['client']] = {}
+
+        return result
 
     @staticmethod
     def decode_pcap(pcap: List[scapy.packet.Packet], channel: Optional[int] = None) -> ScanResult:
@@ -263,6 +273,9 @@ class Decoder:
         result.visible_clients = Decoder.find_clients(pcap, result.visible_aps)
         result.client_ap_data_transfer = Decoder.find_data_transfers(pcap, result.visible_aps, result.visible_clients)
         result.client_authorised = Decoder.find_client_authorisation(pcap)
+
+        # filter by activity
+        result.visible_clients = Decoder.find_active_clients(result.client_ap_data_transfer, result.client_authorised)
         return result
 
 
@@ -289,16 +302,19 @@ def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
     return gathered_result
 
 if __name__ == "__main__":
-    pcap = scapy.utils.rdpcap('/home/alexander/ctf/dump/arctic-01.cap')
+    pcapng = scapy.utils.rdpcap('/home/alexander/ctf/dump/arctic-01.cap')
     #step = 5000
     #for i in range(0, len(pcap) - step, step):
     while True:
-        for channel in range(1, 14):
-            #pcap = ScannerEpoch('wlx00c0caa89fb5', channel, 4).scan().get_result()
+        for channel in list(range(1, 14)):
+            pcap = pcapng
+            #pcap = ScannerEpoch('wlp2s0mon', channel, 4).scan().get_result()
+            #step = 5000
+            #for i in range(0, len(pcapng) - step, step):
+            #pcap = pcapng[i:i+step]
             res = Decoder.decode_pcap(pcap).get()
             #res = Decoder.decode_pcap(cap).get()
-            res['workspace'] = 'dev_space'
+            res['workspace'] = 'arctic'
             pprint.pprint(res)
             requests.post('http://localhost:5000/add_result', json=res)
-            time.sleep(1)
-            break
+            exit(0)
