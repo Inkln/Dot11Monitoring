@@ -12,7 +12,7 @@ class OfflineVendorsParser:
         if filename is None:
             filename = os.path.join(BASE_DIR, "mac.txt")
 
-        text = open(filename, 'r').read().lower()
+        text = open(filename, 'r', encoding="utf-8").read().lower()
 
         reg = re.compile('([0-9a-f]{2}-[0-9a-f]{2}-[0-9a-f]{2}).*\(hex\)\s+(.*)')
 

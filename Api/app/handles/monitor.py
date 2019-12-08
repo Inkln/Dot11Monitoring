@@ -16,7 +16,7 @@ from flask import render_template, redirect, flash, abort, request
 from flask_login import login_required, current_user
 
 @app.route('/monitor', methods=['GET'])
-#@login_required
+@login_required
 def monitor():
     if not current_user.is_viewer:
         flash('You aren\'t viewer')
@@ -26,8 +26,9 @@ def monitor():
 
 
 @app.route('/get_graph', methods=['POST'])
+@login_required
 def get_graph():
-    if not current_user.is_viewer or not current_user.is_authorized:
+    if not current_user.is_viewer:
         return json.dumps({
             'status': 'denied'
         })
@@ -40,7 +41,12 @@ def get_graph():
     })
 
 @app.route('/get_workspaces', methods=['POST'])
+@login_required
 def get_workspaces():
+    if not current_user.is_viewer:
+        return json.dumps({
+            'status': 'denied'
+        })
     workspaces = db.session.query(Ap.workspace).distinct().order_by(Ap.workspace).all()
     workspaces = functools.reduce(operator.add, map(list, workspaces), [])
     return json.dumps({
