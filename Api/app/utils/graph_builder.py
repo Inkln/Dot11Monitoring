@@ -8,8 +8,12 @@ import itertools
 
 from flask_login import current_user
 
-from ...app import db
-from ...app.models import Ap, Client, DataTransfer, Auth
+try:
+    from ...app import db
+    from ...app.models import Ap, Client, DataTransfer, Auth
+except Exception:
+    from app import db
+    from app.models import Ap, Client, DataTransfer, Auth
 
 
 class GraphBuilder:

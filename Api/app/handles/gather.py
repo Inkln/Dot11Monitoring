@@ -2,9 +2,15 @@ import json
 
 from flask import request, abort, config
 
-from ..models import Ap, Client, Auth, DataTransfer
-from ...app import app, db
-from ...app import vendors_provider
+try:
+    from ..models import Ap, Client, Auth, DataTransfer
+    from ...app import app, db
+    from ...app import vendors_provider
+except Exception:
+    from app.models import Ap, Client, Auth, DataTransfer
+    from app import app, db
+    from app import vendors_provider
+
 
 @app.route('/add_result', methods=['POST'])
 def receive_scanner_result():

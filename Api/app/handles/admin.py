@@ -3,8 +3,13 @@ import json
 from flask import request, abort, config, redirect, url_for, flash, render_template
 from flask_login import current_user, login_user, logout_user, login_required
 
-from ..models import User, Ap, Auth, Client, DataTransfer
-from ...app import app, db
+try:
+    from ..models import User, Ap, Auth, Client, DataTransfer
+    from ...app import app, db
+except Exception:
+    from app.models import User, Ap, Auth, Client, DataTransfer
+    from app import app, db
+
 
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required

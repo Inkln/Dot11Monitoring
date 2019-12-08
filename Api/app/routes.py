@@ -1,4 +1,7 @@
-from ..app import app, db
+try:
+    from ..app import app, db
+except Exception:
+    from app import app, db
 
 from flask import render_template, flash, get_flashed_messages
 from flask_login import login_required, current_user

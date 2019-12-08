@@ -3,13 +3,17 @@ import random
 import json
 import functools
 import operator
-from ...app import app, db
-from ...app import graph_builder
-from ..models import Ap
+
+try:
+    from ...app import app, db
+    from ...app import graph_builder
+    from ..models import Ap
+except:
+    from app import app, db
+    from app import graph_builder
+    from app.models import Ap
 from flask import render_template, redirect, flash, abort, request
 from flask_login import login_required, current_user
-
-from ..utils.graph_builder import GraphBuilder
 
 @app.route('/monitor', methods=['GET'])
 #@login_required

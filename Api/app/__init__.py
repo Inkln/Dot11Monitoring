@@ -18,12 +18,19 @@ login = LoginManager(app)
 from .utils.vendors import OfflineVendorsParser
 vendors_provider = OfflineVendorsParser()
 
-from ..app import models
+try:
+    from ..app import models
+except Exception:
+    from app import models
 
 from .utils.graph_builder import GraphBuilder
 graph_builder = GraphBuilder(db=db)
 
-from ..app import routes
+try:
+    from ..app import routes
+except Exception:
+    from app import routes
+
 
 login.login_view = 'index'
 
@@ -39,4 +46,3 @@ def insert_admin_into_db():
                         is_collector=True, is_admin=True, is_viewer=True)
     db.session.add(admin)
     db.session.commit()
-
