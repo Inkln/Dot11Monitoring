@@ -1,6 +1,7 @@
 import json
 
 from flask import request, abort, config
+from flask_login import current_user, login_user, logout_user, login_required
 
 try:
     from ..models import Ap, Client, Auth, DataTransfer
@@ -13,7 +14,11 @@ except Exception:
 
 
 @app.route('/add_result', methods=['POST'])
+@login_required
 def receive_scanner_result():
+    if not current_user.is_collector:
+        return 'Permission denied'
+
     result = request.get_json()
     workspace = result['workspace']
 

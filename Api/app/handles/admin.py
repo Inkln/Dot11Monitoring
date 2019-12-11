@@ -49,10 +49,8 @@ def admin():
             user.is_collector = is_collector
 
             if password[:7] == 'pbkdf2:':
-                print('hash')
                 user.password_hash = password
             else:
-                print('password')
                 user.set_password(password)
 
             db.session.commit()

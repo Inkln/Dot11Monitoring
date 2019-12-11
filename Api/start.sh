@@ -1,4 +1,5 @@
 #!/bin/sh
+rm -rf migrations
 exec flask db init
 exec flask db migrate
 exec flask db upgrade
