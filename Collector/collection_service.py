@@ -3,6 +3,10 @@ import json
 import queue
 import subprocess
 import collections
+import argparse
+import getpass
+import re
+import time
 
 import subprocess
 import requests
@@ -42,14 +46,15 @@ class ScanResult:
 
 
 class ScannerEpoch:
-    def __init__(self, interface: str, channel: int, timeout: int = 2):
+    def __init__(self, interface: str, channel: int = None, timeout: int = 2):
         self.interface_ = interface
         self.channel_ = channel
         self.timeout_ = timeout
         self.result_ = []
 
     def _set_channel(self) -> None:
-        subprocess.run(['iwconfig', self.interface_, 'channel', str(self.channel_)])
+        if channel is not None:
+            subprocess.run(['iwconfig', self.interface_, 'channel', str(self.channel_)])
 
     def _push_back_cp(self, packet: scapy.all.Packet):
         self.result_.append(packet)
@@ -301,6 +306,132 @@ def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
 
     return gathered_result
 
+def auth(session: requests.Session, uri: str, username: str, password: str):
+    try:
+        index = session.get(uri + '/index')
+        reg = re.compile('csrf_token.*?value="([^\"]*?)"')
+        csrf_token = reg.search(index.text).group(1)
+        auth_response = session.post(uri + '/login', data={
+            "username": username,
+            "password": password,
+            "csrf_token": csrf_token,
+            "submit": "Login"
+        }, allow_redirects=False)
+        if auth_response.status_code == 302:
+            return True
+        else:
+            return False
+    except Exception:
+        return False
+
+def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Session, url: str):
+    decoder = Decoder()
+    while True:
+        try:
+            data_to_process = queue.get()
+            if data_to_process is None:
+                return
+
+            pcap, workspace = data_to_process
+            if isinstance(pcap, str):
+                pcap = scapy.utils.rdpcap(pcap)
+
+            res = decoder.decode_pcap(pcap).get()
+            res['workspace'] = workspace
+            try:
+                resp = session_to_send_result.post(url + '/add_result', json=res)
+                if resp.text == "Permission denied":
+                    print('You do not have permissions to add results, you must be member of "collectors" group in server')
+            except:
+                print('Data were processed but weren\'t submitted to server')
+        except:
+            pass
+
+def logger(queue: multiprocessing.Queue):
+    while True:
+        print('>> {} active tasks'.format(queue.qsize()) + ' ' * 10, end='\r')
+        time.sleep(0.5)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--interface", type=str, required=False,
+        help="interface to listen, mode must be set to monitor manually")
+    parser.add_argument("-f", "--file", type=str, nargs='*',
+        help="path to input pcap or space separated list of pcaps to parse and visualize")
+    parser.add_argument("-H", "--host", type=str, default='localhost', required=False,
+        help="host to send results, localhost is default, port may be specified")
+    parser.add_argument("-c", "--channel", type=int, nargs='*', default=[], required=False,
+        help="channel or space separated list of channels to listen, if not specified, current channel of interface will be used")
+    parser.add_argument("-v", "--verbose", required=False, action='store_true',
+        help="show additional info in stdout")
+    parser.add_argument("-t", "--timeout", type=int, default=4, required=False,
+        help="time to parse one channel")
+    parser.add_argument("--iterations", type=int, default=1, required=False,
+        help="iterations over scanning channels, -1 means infinity")
+    parser.add_argument("-u", "--username", type=str, required=True,
+        help="username to use in visualisation server")
+    parser.add_argument("-W", "--workers", type=int, default=1, required=False,
+        help="num workers to process traffic, 1 is default")
+    parser.add_argument("-w", "--workspace", type=str, required=True,
+        help="name of workspace to place results")
+
+    args = parser.parse_args()
+    if args.verbose:
+        print(args)
+
+    if args.file is None and args.interface is None:
+        print('Input pcap file or interface must be specified')
+
+    args.host = args.host if args.host.startswith('http') else 'http://' + args.host
+
+    session = requests.Session()
+    if not auth(session, args.host, args.username, getpass.getpass(prompt='Password to authorize in {}: '.format(args.host))):
+        print('Username or password isn\'t correct')
+        exit(-1)
+
+    queue = multiprocessing.Queue()
+    workers = [multiprocessing.Process(target=worker, args=(queue, session, args.host)) for _ in range(args.workers)]
+    for worker in workers:
+        worker.start()
+
+    log = multiprocessing.Process(target=logger, args=(queue,))
+    log.start()
+
+    # process input files
+    if args.file is not None:
+        print('Opening pcap files: ')
+        for file in args.file:
+            print('> {}'.format(file))
+            queue.put((file, args.workspace))
+        print('-' * 50)
+    else:
+        print('Pcap files wasn\'t found')
+
+    scans = 0
+    # scan
+    if args.interface is not None:
+        print("Scaning interfaces {} for {} iterations")
+        if args.channel == []:
+            args.channel = [None]
+
+        if args.iterations == -1:
+            args.iterations = int(1e10)
+        for _ in range(args.iterations):
+            for channel in channels:
+                print('Channel: {}, Interface: {}'.format(channel, inteface))
+                result = ScannerEpoch(interface=args.interface, channel=channel, timeout=args.timeout)
+                pcap = result.scan().get_result()
+                queue.put((pcap, args.workspace))
+
+    for _ in range(args.workers):
+        queue.put(None)
+
+    for worker in workers:
+        worker.join()
+
+    log.terminate()
+    log.join()
+'''
 if __name__ == "__main__":
     pcapng = scapy.utils.rdpcap('/home/alexander/ctf/dump/arctic-01.cap')
     #step = 5000
@@ -316,5 +447,6 @@ if __name__ == "__main__":
             #res = Decoder.decode_pcap(cap).get()
             res['workspace'] = 'arctic'
             pprint.pprint(res)
-            requests.post('http://localhost:5000/add_result', json=res)
+            requests.post('http://vm899809.had.yt//add_result', json=res)
             exit(0)
+'''
