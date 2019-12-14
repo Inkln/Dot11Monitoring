@@ -34,7 +34,7 @@
 </head>
 
 <body>
-<div style="height: 80vh">
+<div class="container-fluid">
     {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
     {% for category, message in messages %}
@@ -64,70 +64,52 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
-
-
-    <!--<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow text-right">
-         <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">802.11 monitor</a>
+    <div>
+        <nav class="navbar navbar-light bg-light shadow py-sm-0">
+            <div class="navbar-header navbar-nav mr-auto">
+                <a class="navbar-brand" href="/index">802.11 monitor</a>
             </div>
+            {% if current_user.is_authenticated %}
 
-            <div class="container-fluid navbar-nav">
-                {% if current_user.is_authenticated %}
-                <div class="nav navbar-nav navbar-right navbar-brand">
-                    <strong>Welcome, {{ current_user.username }}</strong>
-                <a href="/main_page" class="btn-lg btn-info pull-left"><strong>Monitor</strong></a>
-                <a href="/logout" class="btn-lg btn-info pull-left"><strong>Logout</strong></a>
+
+            <div class="navbar-header navbar-nav justify-content-end flex-row">
+
+                {% block head_content %}{% endblock %}
+
+                <div class="navbar-header navbar-nav ml-auto navbar-brand">
+                    <a href="/main_page" class="btn btn-outline-success">Main page</a>
+                </div>
+
+                {% if current_user.is_viewer %}
+                <div class="navbar-header navbar-nav ml-auto navbar-brand">
+                    <a href="/monitor" class="btn btn-outline-success">Monitor</a>
+                </div>
                 {% endif %}
-            </div>
-         </div>
-      </nav>-->
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
-        <div class="navbar-header navbar-nav mr-auto">
-            <a class="navbar-brand" href="/index">802.11 monitor</a>
-        </div>
-        {% if current_user.is_authenticated %}
+                {% if current_user.is_admin %}
+                <div class="navbar-header navbar-nav ml-auto navbar-brand">
+                    <a href="/admin" class="btn btn-outline-success">Admin page</a>
+                </div>
+                {% endif %}
 
-
-        <div class="navbar-header navbar-nav justify-content-end flex-row">
-
-            {% block head_content %}{% endblock %}
-
-            <div class="navbar-header navbar-nav ml-auto navbar-brand">
-                <a href="/main_page" class="btn btn-outline-success navbar-brand">Main page</a>
-            </div>
-
-            {% if current_user.is_viewer %}
-            <div class="navbar-header navbar-nav ml-auto navbar-brand">
-                <a href="/monitor" class="btn btn-outline-success navbar-brand">Monitor</a>
+                <div class="navbar-header navbar-nav ml-auto navbar-brand">
+                    <a href="/logout" class="btn btn-outline-success">Logout {{ current_user.username }}</a>
+                </div>
             </div>
             {% endif %}
-
-            {% if current_user.is_admin %}
-            <div class="navbar-header navbar-nav ml-auto navbar-brand">
-                <a href="/admin" class="btn btn-outline-success navbar-brand">Admin page</a>
-            </div>
-            {% endif %}
-
-            <div class="navbar-header navbar-nav ml-auto navbar-brand">
-                <a href="/logout" class="btn btn-outline-success navbar-brand">Logout {{ current_user.username }}</a>
-            </div>
-        </div>
-        {% endif %}
-    </nav>
-
-    <div style="height: 100vh">
-        {% block page_content %}{% endblock %}
+        </nav>
     </div>
 
-    <div class="container align-self-end">
-        <div class="row justify-content-end">
-            <div class="col-xs-1 align-self-end">
+    {% block page_content %}
+    {% endblock %}
+
+    <div class="row align-self-end fixed-bottom justify-content-end">
+            <div class="col-md-3">
                 You can view source code <a href="https://github.com/Avi2011class/Dot11Monitoring">here</a>.
             </div>
-        </div>
+
     </div>
+
 </div>
 </body>
 </html>

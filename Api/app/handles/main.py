@@ -6,6 +6,7 @@ except Exception:
 from flask import render_template, redirect
 from flask_login import login_required, current_user
 
+
 @app.route('/main_page', methods=['GET'])
 @login_required
 def main_page():

@@ -1,12 +1,10 @@
 import pprint
 import json
-import queue
-import subprocess
 import collections
 import argparse
 import getpass
+import pickle
 import re
-import time
 
 import subprocess
 import requests
@@ -24,6 +22,7 @@ import scapy.all
 import scapy.sendrecv
 
 import tqdm
+
 
 class ScanResult:
     def __init__(self):
@@ -67,7 +66,7 @@ class ScannerEpoch:
         return self
 
     def get_result(self) -> List[scapy.packet.Packet]:
-        return self.result_
+        return [packet for packet in self.result_]
 
 
 class EAPOLPayloadHeader:
@@ -198,12 +197,6 @@ class Decoder:
         result = collections.defaultdict(int)
         for packet in pcap:
 
-            # if 'd8:ce:3a:8c:8e:42' in [packet.addr1, packet.addr2]:
-            #    print(packet.type, packet.subtype)
-
-            #if packet.type != 2 or packet.subtype < 0x20 or packet.subtype > 0x2f:
-            #    continue
-
             if not packet.haslayer(scapy.layers.dot11.Dot11QoS) or len(packet) < 250:
                 continue
 
@@ -222,7 +215,7 @@ class Decoder:
             if addr2 in aps_info and addr1 in clients_info:
                 result[(addr2, addr1)] += len(packet)
 
-        return [ {
+        return [{
             'ap': ap,
             'client': client,
             'bytes': result[(ap, client)]
@@ -325,7 +318,7 @@ def auth(session: requests.Session, uri: str, username: str, password: str):
         return False
 
 def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Session, url: str):
-    decoder = Decoder()
+    decoder = Decoder
     while True:
         try:
             data_to_process = queue.get()
@@ -335,6 +328,8 @@ def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Sessio
             pcap, workspace = data_to_process
             if isinstance(pcap, str):
                 pcap = scapy.utils.rdpcap(pcap)
+            else:
+                pcap = pickle.loads(pcap)
 
             res = decoder.decode_pcap(pcap).get()
             res['workspace'] = workspace
@@ -345,12 +340,14 @@ def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Sessio
             except:
                 print('Data were processed but weren\'t submitted to server')
         except:
-            pass
+            print('Error')
+
 
 def logger(queue: multiprocessing.Queue):
     while True:
         print('>> {} active tasks'.format(queue.qsize()) + ' ' * 10, end='\r')
         time.sleep(0.5)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -408,20 +405,21 @@ if __name__ == "__main__":
         print('Pcap files wasn\'t found')
 
     scans = 0
+
     # scan
     if args.interface is not None:
-        print("Scaning interfaces {} for {} iterations")
-        if args.channel == []:
+        print("Scaning interfaces {} for {} iterations".format(args.interface, args.iterations))
+        if not args.channel:
             args.channel = [None]
 
         if args.iterations == -1:
             args.iterations = int(1e10)
         for _ in range(args.iterations):
-            for channel in channels:
-                print('Channel: {}, Interface: {}'.format(channel, inteface))
+            for channel in args.channel:
+                print('Channel: {}, Interface: {}'.format(channel, args.interface))
                 result = ScannerEpoch(interface=args.interface, channel=channel, timeout=args.timeout)
                 pcap = result.scan().get_result()
-                queue.put((pcap, args.workspace))
+                queue.put((pickle.dumps(pcap), args.workspace))
 
     for _ in range(args.workers):
         queue.put(None)
@@ -431,22 +429,3 @@ if __name__ == "__main__":
 
     log.terminate()
     log.join()
-'''
-if __name__ == "__main__":
-    pcapng = scapy.utils.rdpcap('/home/alexander/ctf/dump/arctic-01.cap')
-    #step = 5000
-    #for i in range(0, len(pcap) - step, step):
-    while True:
-        for channel in list(range(1, 14)):
-            pcap = pcapng
-            #pcap = ScannerEpoch('wlp2s0mon', channel, 4).scan().get_result()
-            #step = 5000
-            #for i in range(0, len(pcapng) - step, step):
-            #pcap = pcapng[i:i+step]
-            res = Decoder.decode_pcap(pcap).get()
-            #res = Decoder.decode_pcap(cap).get()
-            res['workspace'] = 'arctic'
-            pprint.pprint(res)
-            requests.post('http://vm899809.had.yt//add_result', json=res)
-            exit(0)
-'''

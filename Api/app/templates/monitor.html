@@ -6,28 +6,10 @@
     </select>
 </div>
 {% endblock %}
-
+s
 {% block page_content %}
 <script src="static/graph_builder.js?v={{ seed }}"></script>
 
-<nav>
-    <div class="nav nav-tabs" id="nav-tab2" role="tablist">
-        <!--
-        <a class="nav-item nav-link active" id="nav-users-tab" data-toggle="tab" href="#nav-users" role="tab"
-           aria-controls="nav-users" aria-selected="true">Users</a>
-        <a class="nav-item nav-link" id="nav-ap-tab" data-toggle="tab" href="#nav-ap" role="tab"
-           aria-controls="nav-ap" aria-selected="false">Access points</a>
-        <a class="nav-item nav-link" id="nav-client-tab" data-toggle="tab" href="#nav-client" role="tab"
-           aria-controls="nav-client" aria-selected="false">Clients</a>
-        <a class="nav-item nav-link" id="nav-datatransfer-tab" data-toggle="tab" href="#nav-datatransfer" role="tab"
-           aria-controls="nav-datatransfer" aria-selected="false">Data transfers</a>
-        <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab"
-           aria-controls="nav-auth" aria-selected="false">Athorisations</a>
-        -->
-    </div>
-</nav>
-
-
-<div id="network-graph" style="height: 100%">
+<div id="network-graph" style="position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: -1">
 </div>
 {% endblock %}

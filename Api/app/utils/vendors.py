@@ -6,6 +6,8 @@ import requests
 from pprint import pprint
 
 BASE_DIR = os.path.dirname(__file__)
+
+
 class OfflineVendorsParser:
 
     def __init__(self, filename=None):
