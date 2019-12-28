@@ -20,9 +20,9 @@ from flask_login import login_required, current_user
 def monitor():
     if not current_user.is_viewer:
         flash('You aren\'t viewer')
-        return redirect('/main_page', 'Permissions denied')
+        abort(403)
 
-    return render_template('monitor.html', seed=random.randint(1, 10000000))
+    return render_template('monitor.html', seed=random.randint(1, 10000000), title='Monitor')
 
 
 @app.route('/get_graph', methods=['POST'])

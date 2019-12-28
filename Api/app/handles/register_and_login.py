@@ -16,17 +16,17 @@ except Exception:
 @app.route('/login', methods=['POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main_page'), code=303)
+        return redirect(url_for('main_page'), code=304)
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password', 'Error')
-            return redirect(url_for('index'), code=303)
+            return redirect(url_for('index'), code=304)
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('main_page'), code=302)
+        return redirect(url_for('main_page'), code=303)
     flash('Invalid form data', 'Error')
-    return redirect(url_for('index'), code=303)
+    return redirect(url_for('index'), code=304)
 
 
 @app.route('/logout')
@@ -47,7 +47,7 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!', 'Message')
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('main_page'))
+        return redirect(url_for('main_page'), 303)
 
     flash('Registration failed', 'Error')
     return redirect(url_for('index'))

@@ -15,8 +15,7 @@ except Exception:
 @login_required
 def admin():
     if not current_user.is_admin:
-        flash('You aren\'t admin', 'Permissions denied')
-        return redirect('/main_page')
+        abort(403)
 
     if request.method == 'GET':
         return render_template('admin.html',
@@ -24,7 +23,8 @@ def admin():
                                aps=db.session.query(Ap).order_by(Ap.id).all(),
                                clients=db.session.query(Client).order_by(Client.id).all(),
                                datatransfers=db.session.query(DataTransfer).order_by(DataTransfer.id).all(),
-                               auths=db.session.query(Auth).order_by(Auth.id).all()
+                               auths=db.session.query(Auth).order_by(Auth.id).all(),
+                               title='Admin page'
                                )
     elif request.method == 'POST':
         id = request.form['id']
@@ -33,11 +33,13 @@ def admin():
         is_viewer = request.form.get('is_viewer', False)
         is_collector = request.form.get('is_collector', False)
         is_admin = request.form.get('is_admin', False)
+        is_sql = request.form.get('is_sql', False)
 
         to_bool = lambda x: False if x == False else True
         is_viewer = to_bool(is_viewer)
         is_collector = to_bool(is_collector)
         is_admin = to_bool(is_admin)
+        is_sql = to_bool(is_sql)
 
         action = request.form['action']
 
@@ -47,6 +49,7 @@ def admin():
             user.is_viewer = is_viewer
             user.is_admin = is_admin
             user.is_collector = is_collector
+            user.is_sql = is_sql
 
             if password[:7] == 'pbkdf2:':
                 user.password_hash = password
@@ -63,4 +66,3 @@ def admin():
 
     else:
         return redirect('/admin')
-

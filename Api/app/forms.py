@@ -34,4 +34,5 @@ class EditForm(FlaskForm):
     is_admin = BooleanField('Is admin', validators=[DataRequired()])
     is_viewer = BooleanField('Is viewer', validators=[DataRequired()])
     is_collector = BooleanField('Is collector', validators=[DataRequired()])
+    is_sql = BooleanField('Is sql executor', validators=[DataRequired()])
     action = StringField('Action', validators=[DataRequired()])

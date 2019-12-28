@@ -17,6 +17,7 @@ class User(UserMixin, db.Model):
     is_collector = db.Column(db.Boolean, default=False)
     is_viewer = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
+    is_sql = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

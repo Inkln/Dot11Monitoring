@@ -17,7 +17,7 @@ except Exception:
 @login_required
 def receive_scanner_result():
     if not current_user.is_collector:
-        return 'Permission denied'
+        return 'Permission denied', 403
 
     result = request.get_json()
     workspace = result['workspace']

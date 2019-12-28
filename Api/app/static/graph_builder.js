@@ -21,7 +21,9 @@ let init_network = (async (container_element_id) => {
         }
     };
 
-    let workspace = await (async () => {})()
+    let workspace = undefined;
+
+    workspace = await (async () => {})()
         .then(update_workspaces_list)
         .then(get_selected_workspace);
 
@@ -92,7 +94,11 @@ let update_workspaces_list  = (async () => {
 
 let get_selected_workspace = (async () => {
    let parent = document.getElementById("active_workspace");
-   return result = parent.options[parent.selectedIndex].value;
+   try {
+       return result = parent.options[parent.selectedIndex].value;
+   } catch {
+       return "undefined_workspace";
+   }
 });
 
 let update = (async () => {

@@ -1,7 +1,25 @@
 {% extends "base.html" %}
 
 {% block page_content %}
-<div class="container bg-info">
-123
+<div class="container">
+    <div class="row">
+        <div class="col m-3">
+            <div class="border border-dark shadow rounded bg-light">
+                <div class="container p-3">
+                    <h2> User information </h2>
+                    <form class="form form-vertical" action="/login" method="post" novalidate>
+                        <h5> User id: <label class="text-info"> {{ user.id }} </label></h5>
+                        <h5> User login: <label class="text-info"> {{ user.username }} </label></h5>
+                        <h5> Permissions to view graphs: {% if user.is_viewer %} <label class="text-success">Yes</label>
+                            {% else %} <label class="text-error">No</label> {% endif %} </h5>
+                        <h5> Permissions to upload new results: {% if user.is_collector %} <label class="text-success">Yes</label>
+                            {% else %} <label class="text-error">No</label> {% endif %} </h5>
+                        <h5> Permissions to admin: {% if user.is_admin %} <label class="text-success">Yes</label> {%
+                            else %} <label class="text-error">No</label> {% endif %} </h5>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

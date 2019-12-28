@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<div class="container">
+    <div class="row justify-content-around">
+        <!--div class="col-xs-3 m-3">
+            <div class="container border border-dark shadow rounded bg-light">
+                <div class="container p-3">
+                    <h2>Schema of database</h2>
+                    <div class="container p-3">
+                        <img class="img-fluid img-responsive" width="300" src="/static/db_schema.png">
+                    </div>
+                </div>
+            </div>
+        </div>
+        -->
+        <div class="col-xs-9 m-3" style="width: 100%">
+            <div class="container-fluid border border-dark shadow rounded bg-light">
+                <div class="container p-3">
+                    <h2>SQL editor</h2>
+                    <form class="form form-vertical">
+                        <div id="sql_editor" class="border"></div>
+                        <script type="text/javascript" src="static/execute_sql.js?id={{ seed }}"></script>
+                        <button type="button" class="btn-success btn form-control pull-right" onclick="execute_sql()">Run</button>
+                    </form>
+                    <div id="sql_result">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

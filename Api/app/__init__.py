@@ -43,6 +43,6 @@ def insert_admin_into_db():
     admin_password = b64encode(get_random_bytes(12)).decode('utf-8')
     print('User \'admin\' created with password:', admin_password)
     admin = models.User(username='admin', password_hash=generate_password_hash(admin_password),
-                        is_collector=True, is_admin=True, is_viewer=True)
+                        is_collector=True, is_admin=True, is_viewer=True, is_sql=True)
     db.session.add(admin)
     db.session.commit()

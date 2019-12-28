@@ -55,7 +55,7 @@ class ScannerEpoch:
         if channel is not None:
             subprocess.run(['iwconfig', self.interface_, 'channel', str(self.channel_)])
 
-    def _push_back_cp(self, packet: scapy.all.Packet):
+    def _push_back_cp(self, packet: scapy.packet.Packet):
         self.result_.append(packet)
 
     def scan(self):
@@ -87,7 +87,7 @@ class EAPOLPayloadHeader:
 
     def _is_1_stage(self) -> bool:
         return self.is_ack and not self.is_install and not self.is_mic and \
-            not self.is_secure and not self.is_request
+               not self.is_secure and not self.is_request
 
     def _is_2_stage(self) -> bool:
         return self.is_mic and not self.is_install and not self.is_ack and \
@@ -134,25 +134,25 @@ class Decoder:
         return 'unknown'
 
     @staticmethod
-    def find_aps_info(pcap: List[scapy.packet.Packet], channel: Optional[int]=None) -> Dict[str, Dict[str, str]]:
+    def find_aps_info(pcap: List[scapy.packet.Packet], channel: Optional[int] = None) -> Dict[str, Dict[str, str]]:
         result = {}
         for packet in pcap:
-                if packet.type == 0 and packet.subtype == 8:
-                    if packet.addr2 in result:
-                        continue
-                    essid = None
-                    try:
-                        essid = packet.info.decode('utf-8')
-                    except:
-                        essid = str(packet.info)
+            if packet.type == 0 and packet.subtype == 8:
+                if packet.addr2 in result:
+                    continue
+                essid = None
+                try:
+                    essid = packet.info.decode('utf-8')
+                except:
+                    essid = str(packet.info)
 
-                    ap_mac = packet.addr2
-                    privacy = Decoder.get_encryption_type(packet)
-                    result[ap_mac] = {
-                        'essid': essid,
-                        'privacy': privacy,
-                        'channel': channel if channel is not None else -1
-                    }
+                ap_mac = packet.addr2
+                privacy = Decoder.get_encryption_type(packet)
+                result[ap_mac] = {
+                    'essid': essid,
+                    'privacy': privacy,
+                    'channel': channel if channel is not None else -1
+                }
 
         return result
 
@@ -219,7 +219,7 @@ class Decoder:
             'ap': ap,
             'client': client,
             'bytes': result[(ap, client)]
-        } for ap, client in result ]
+        } for ap, client in result]
 
     @staticmethod
     def find_client_authorisation(pcap: List[scapy.packet.Packet]) -> List[Dict[str, Union[str, int]]]:
@@ -244,12 +244,12 @@ class Decoder:
                 elif cur_stage < stage:
                     auth_stages[(client, ap)] = (stage, 1)
 
-        return [ {
+        return [{
             'ap': key[1],
             'client': key[0],
             'stage': auth_stages[key][0],
             'tries': auth_stages[key][1]
-        } for key in auth_stages ]
+        } for key in auth_stages]
 
     @staticmethod
     def find_active_clients(data_transfers: List[Dict[str, str]], auth: List[Dict[str, Union[str, int]]]):
@@ -279,13 +279,12 @@ class Decoder:
 
 def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
                 timeout: Union[int, float]):
-
     result = []
     for channel in tqdm.tqdm(channels):
         scanner = ScannerEpoch(interface=interface, channel=channel, timeout=timeout)
         scanner.scan()
         pcap = scanner.get_result()
-        result.append( Decoder.decode_pcap(pcap, channel) )
+        result.append(Decoder.decode_pcap(pcap, channel))
 
     gathered_result = result[0]
 
@@ -299,6 +298,7 @@ def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]],
 
     return gathered_result
 
+
 def auth(session: requests.Session, uri: str, username: str, password: str):
     try:
         index = session.get(uri + '/index')
@@ -310,12 +310,13 @@ def auth(session: requests.Session, uri: str, username: str, password: str):
             "csrf_token": csrf_token,
             "submit": "Login"
         }, allow_redirects=False)
-        if auth_response.status_code == 302:
+        if auth_response.status_code == 303:
             return True
         else:
             return False
     except Exception:
         return False
+
 
 def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Session, url: str):
     decoder = Decoder
@@ -336,7 +337,8 @@ def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Sessio
             try:
                 resp = session_to_send_result.post(url + '/add_result', json=res)
                 if resp.text == "Permission denied":
-                    print('You do not have permissions to add results, you must be member of "collectors" group in server')
+                    print(
+                        'You do not have permissions to add results, you must be member of "collectors" group in server')
             except:
                 print('Data were processed but weren\'t submitted to server')
         except:
@@ -352,25 +354,26 @@ def logger(queue: multiprocessing.Queue):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--interface", type=str, required=False,
-        help="interface to listen, mode must be set to monitor manually")
+                        help="interface to listen, mode must be set to monitor manually")
     parser.add_argument("-f", "--file", type=str, nargs='*',
-        help="path to input pcap or space separated list of pcaps to parse and visualize")
+                        help="path to input pcap or space separated list of pcaps to parse and visualize")
     parser.add_argument("-H", "--host", type=str, default='localhost', required=False,
-        help="host to send results, localhost is default, port may be specified")
+                        help="host to send results, localhost is default, port may be specified")
     parser.add_argument("-c", "--channel", type=int, nargs='*', default=[], required=False,
-        help="channel or space separated list of channels to listen, if not specified, current channel of interface will be used")
+                        help="channel or space separated list of channels to listen, if not specified, "
+                             "current channel of interface will be used")
     parser.add_argument("-v", "--verbose", required=False, action='store_true',
-        help="show additional info in stdout")
+                        help="show additional info in stdout")
     parser.add_argument("-t", "--timeout", type=int, default=4, required=False,
-        help="time to parse one channel")
+                        help="time to parse one channel")
     parser.add_argument("--iterations", type=int, default=1, required=False,
-        help="iterations over scanning channels, -1 means infinity")
+                        help="iterations over scanning channels, -1 means infinity")
     parser.add_argument("-u", "--username", type=str, required=True,
-        help="username to use in visualisation server")
+                        help="username to use in visualisation server")
     parser.add_argument("-W", "--workers", type=int, default=1, required=False,
-        help="num workers to process traffic, 1 is default")
+                        help="num workers to process traffic, 1 is default")
     parser.add_argument("-w", "--workspace", type=str, required=True,
-        help="name of workspace to place results")
+                        help="name of workspace to place results")
 
     args = parser.parse_args()
     if args.verbose:
@@ -382,7 +385,8 @@ if __name__ == "__main__":
     args.host = args.host if args.host.startswith('http') else 'http://' + args.host
 
     session = requests.Session()
-    if not auth(session, args.host, args.username, getpass.getpass(prompt='Password to authorize in {}: '.format(args.host))):
+    if not auth(session, args.host, args.username,
+                getpass.getpass(prompt='Password to authorize in {}: '.format(args.host))):
         print('Username or password isn\'t correct')
         exit(-1)
 

@@ -28,6 +28,7 @@
                 <th scope="col">Is viewer</th>
                 <th scope="col">Is collector</th>
                 <th scope="col">Is admin</th>
+                <th scope="col">Is sql</th>
                 <th scope="col">Edit</th>
                 <th scope="col">Delete</th>
             </tr>
@@ -43,6 +44,7 @@
                     <td> <input type="checkbox" name="is_viewer" class="form-control form-control-sm" {% if user.is_viewer %} checked {% endif %}>  </td>
                     <td> <input type="checkbox" name="is_collector" class="form-control form-control-sm" {% if user.is_collector %} checked {% endif %}> </td>
                     <td> <input type="checkbox" name="is_admin" class="form-control form-control-sm" {% if user.is_admin %} checked {% endif %}> </td>
+                    <td> <input type="checkbox" name="is_sql" class="form-control form-control-sm" {% if user.is_sql %} checked {% endif %}> </td>
                     <td> <input type="submit" name="action" class="btn btn-sm btn-success" value="Edit and save"> </td>
                     <td> <input type="submit" name="action" class="btn btn-sm btn-danger" value="Delete"> </td>
                 </form>
