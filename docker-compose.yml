@@ -1,0 +1,36 @@
+version: '2'
+services:
+  db:
+    restart: on-failure
+    build:
+      dockerfile: "./dockerfile.db"
+      context: "./Docker"
+    container_name: db
+    ports:
+      - "5432:5432"
+    environment:
+      - DEBUG=false
+      - DB_USER=dot11admin
+      - DB_PASS=dot11password
+      - DB_NAME=dot11monitor
+    volumes:
+      - /srv/docker/postgresql:/var/lib/postgresql
+
+
+  api:
+    depends_on:
+      - db
+    container_name: api
+    restart: on-failure
+    build:
+      dockerfile: "./Docker/dockerfile.api"
+      context: "."
+    ports:
+      - "80:5000"
+    environment:
+      - DATABASE_URI=postgresql://dot11admin:dot11password@db/dot11monitor
+      # user to execute sql, db MUST be configured to avoid risks from it's actions
+      # comment this line to disable sql execution from user space
+      - LIMITED_DATABASE_URI=postgresql://dot11viewer:dot11password@db/dot11monitor
+      # default password for admin user if not exists
+      - ADMIN_PASSWORD=admin
