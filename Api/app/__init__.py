@@ -1,17 +1,21 @@
+import os
+
 from flask import Flask
-from .config import Config
+try:
+    from config import Config
+except Exception:
+    from Api.config import Config
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from werkzeug.security import generate_password_hash, check_password_hash
-
-from Crypto.Random import get_random_bytes
-from base64 import b64encode
+from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
+
 migrate = Migrate(app, db)
 login = LoginManager(app)
 
@@ -25,6 +29,16 @@ except Exception:
 
 from .utils.graph_builder import GraphBuilder
 graph_builder = GraphBuilder(db=db)
+
+# database connection to allow users write own sql. MUST BE SAFETY or RDONLY
+# and have LIMITED PERMISSIONS
+connections = {}
+try:
+    import sqlalchemy
+    connections['read_only'] = sqlalchemy.create_engine(Config.LIMITED_DATABASE_URI)
+except Exception:
+    pass
+
 
 try:
     from ..app import routes
@@ -40,7 +54,7 @@ def insert_admin_into_db():
     if admin_from_db is not None:
         return
 
-    admin_password = b64encode(get_random_bytes(12)).decode('utf-8')
+    admin_password = Config.ADMIN_PASSWORD
     print('User \'admin\' created with password:', admin_password)
     admin = models.User(username='admin', password_hash=generate_password_hash(admin_password),
                         is_collector=True, is_admin=True, is_viewer=True, is_sql=True)

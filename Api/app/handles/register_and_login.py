@@ -1,7 +1,7 @@
 import json
 
 from flask import request, abort, config, redirect, url_for, flash, render_template
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 
 try:
     from ..models import User
@@ -15,8 +15,8 @@ except Exception:
 
 @app.route('/login', methods=['POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('main_page'), code=304)
+    #if current_user.is_authenticated:
+    #    return redirect(url_for('main_page'), code=304)
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -30,6 +30,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))

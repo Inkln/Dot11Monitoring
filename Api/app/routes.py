@@ -15,7 +15,4 @@ from .handles import *
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    #for category, message in get_flashed_messages(with_categories=True):
-    #    flash(message, category)
-    #    break
     return render_template('index.html', form_login=LoginForm(), form_register=RegisterForm())
