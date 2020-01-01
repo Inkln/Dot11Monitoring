@@ -25,22 +25,23 @@ def monitor():
     return render_template('monitor.html', seed=random.randint(1, 10000000), title='Monitor')
 
 
-@app.route('/get_graph', methods=['POST'])
+@app.route('/get_graph', methods=['GET'])
 @login_required
 def get_graph():
     if not current_user.is_viewer:
         return json.dumps({
             'status': 'denied'
         })
-    json_data = request.get_json(force=True)
-    data = graph_builder.get(workspace=json_data['workspace'])
+    workspace = request.args.get('workspace')
+    print(workspace)
+    data = graph_builder.get(workspace=workspace)
 
     return json.dumps({
         'status': 'ok',
         'data': data
     })
 
-@app.route('/get_workspaces', methods=['POST'])
+@app.route('/get_workspaces', methods=['GET'])
 @login_required
 def get_workspaces():
     if not current_user.is_viewer:

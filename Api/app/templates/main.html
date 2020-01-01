@@ -11,11 +11,13 @@
                         <h5> User id: <label class="text-info"> {{ user.id }} </label></h5>
                         <h5> User login: <label class="text-info"> {{ user.username }} </label></h5>
                         <h5> Permissions to view graphs: {% if user.is_viewer %} <label class="text-success">Yes</label>
-                            {% else %} <label class="text-error">No</label> {% endif %} </h5>
+                            {% else %} <label class="text-danger">No</label> {% endif %} </h5>
                         <h5> Permissions to upload new results: {% if user.is_collector %} <label class="text-success">Yes</label>
-                            {% else %} <label class="text-error">No</label> {% endif %} </h5>
+                            {% else %} <label class="text-danger">No</label> {% endif %} </h5>
                         <h5> Permissions to admin: {% if user.is_admin %} <label class="text-success">Yes</label> {%
-                            else %} <label class="text-error">No</label> {% endif %} </h5>
+                            else %} <label class="text-danger">No</label> {% endif %} </h5>
+                          <h5> Permissions to execute sql: {% if user.is_sql %} <label class="text-success">Yes</label> {%
+                            else %} <label class="text-danger">No</label> {% endif %} </h5>
                     </form>
                 </div>
             </div>
