@@ -41,13 +41,10 @@ let init_network = (async (container_element_id) => {
 });
 
 let fetch_graph = (async (workspace) => {
-        response = await fetch("/get_graph",
-            {
-                method: "POST",
-                body: JSON.stringify({workspace: workspace})
-            });
-        json = await response.json();
-        return json.data;
+    let url = "/get_graph?workspace=" + encodeURIComponent(workspace);
+    let response = await fetch(url);
+    let json = await response.json();
+    return json.data;
     });
 
 let update_graph = (async (workspace) => {
@@ -72,7 +69,7 @@ let update_graph = (async (workspace) => {
 let fetch_workspaces_list = (async() => {
    response = await fetch("/get_workspaces",
             {
-                method: "POST"
+                method: "GET"
             });
         json = await response.json();
         return json.data;
