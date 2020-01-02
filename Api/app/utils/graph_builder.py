@@ -25,7 +25,7 @@ class GraphBuilder:
         ap_list = self._db.session.query(Ap).filter_by(workspace=workspace).all()
         ap_nodes = [{
             'id': ap.ap_mac,
-            'label': '{}\n({})'.format(ap.ap_mac, ap.essid),
+            'label': '{}\n({}, {})'.format(ap.ap_mac, ap.essid, ap.privacy),
             'group': 'ap'
         } for ap in ap_list]
 
@@ -68,6 +68,6 @@ class GraphBuilder:
         }
 
         return result
-    
+
     def json(self, workspace: str) -> str:
         return json.dumps(self.get(workspace))
