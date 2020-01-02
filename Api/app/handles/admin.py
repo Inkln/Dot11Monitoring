@@ -15,6 +15,7 @@ except Exception:
 @login_required
 def admin():
     if not current_user.is_admin:
+        flash('You aren\'t admin')
         abort(403)
 
     if request.method == 'GET':

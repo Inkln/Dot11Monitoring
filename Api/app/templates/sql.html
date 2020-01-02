@@ -6,11 +6,20 @@
             <div class="container-fluid border border-dark shadow rounded bg-light">
                 <div class="container-fluid p-3">
                     <h2>SQL editor</h2>
-                    <form class="form form-vertical">
-                        <div id="sql_editor" class="border"></div>
-                        <script type="text/javascript" src="static/execute_sql.js?id={{ seed }}"></script>
-                        <button type="button" class="btn-success btn form-control pull-right" onclick="execute_sql()">Run</button>
-                    </form>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <form class="form form-vertical">
+                                    <div id="sql_editor" class="border"></div>
+                                    <script type="text/javascript" src="static/execute_sql.js?id={{ seed }}"></script>
+                                    <button type="button" class="btn-success btn form-control pull-right" onclick="execute_sql()">Run</button>
+                                </form>
+                            </div>
+                            <div class="col-md-3">
+                                <img src="/static/db_schema.png" class="img-fluid" style="height: 75%">
+                            </div>
+                        </div>
+                    </div>
                     <div id="sql_result" class="table-responsive fade show active">
                     </div>
                 </div>

@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # auth models
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    __table_args__ = {"schema": "private"}
+    #__table_args__ = {"schema": "private"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
@@ -29,7 +29,7 @@ class User(UserMixin, db.Model):
 
 # dot11 models
 class Auth(db.Model):
-    __table_args__ = {"schema": "statistic"}
+    #__table_args__ = {"schema": "statistic"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     ap_mac = db.Column(db.String(32), index=True)
     client_mac = db.Column(db.String(32), index=True)
@@ -43,7 +43,7 @@ class Auth(db.Model):
 
 
 class DataTransfer(db.Model):
-    __table_args__ = {"schema": "statistic"}
+    #__table_args__ = {"schema": "statistic"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     ap_mac = db.Column(db.String(32), index=True)
     client_mac = db.Column(db.String(32), index=True)
@@ -56,7 +56,7 @@ class DataTransfer(db.Model):
 
 
 class Ap(db.Model):
-    __table_args__ = {"schema": "statistic"}
+    #__table_args__ = {"schema": "statistic"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     ap_mac = db.Column(db.String(32), index=True)
     workspace = db.Column(db.String(256), primary_key=True)
@@ -72,7 +72,7 @@ class Ap(db.Model):
 
 
 class Client(db.Model):
-    __table_args__ = {"schema": "statistic"}
+    #__table_args__ = {"schema": "statistic"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     client_mac = db.Column(db.String(32), index=True)
     workspace = db.Column(db.String(256), primary_key=True)

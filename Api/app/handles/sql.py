@@ -16,6 +16,7 @@ from flask_login import login_required, current_user
 def sql():
     if request.method == 'GET':
         if not current_user.is_sql:
+            flash('You have not permissions to execute sql')
             abort(403)
 
         return render_template('sql.html', seed=random.randint(0, 10 ** 9), title='Sql editor')
