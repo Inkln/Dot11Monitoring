@@ -140,6 +140,7 @@ Access to this page grants you full permissions over server.
 
 6. **SQL Editor page**
 ![SQL Editor page][sql_editor]
+![SQL results][sql_results]
 
 This page allow users to write custom sql requests to database. You are in read only mode, can't see private schames but have access to schemas pg_catalog, pg_tables and pg_tables. Moreover, users are able to execute functions (but not create them or use filesystem functions). It means, than malicious users CAN produce troubles like via high-load requests, for example. You shouldn't grant sql permission to users you do not grant.
 
@@ -149,3 +150,4 @@ This page allow users to write custom sql requests to database. You are in read 
 [monitor_page]: ./screenshots/monitor_page.png
 [admin_users]: ./screenshots/admin_users.png
 [sql_editor]: ./screenshots/sql_editor.png
+[sql_results]: ./screenshots/sql_result.png
