@@ -9,3 +9,6 @@ up:
 
 up-daemon:
 	docker-compose up -d db
+
+stop:
+	docker-compose stop
