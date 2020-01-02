@@ -148,10 +148,17 @@ class Decoder:
 
                 ap_mac = packet.addr2
                 privacy = Decoder.get_encryption_type(packet)
+
+                local_channel = channel
+                try:
+                    local_channel = packet.getlayer(scapy.layers.dot11.RadioTap).Channel
+                except Exception:
+                    pass
+
                 result[ap_mac] = {
                     'essid': essid,
                     'privacy': privacy,
-                    'channel': channel if channel is not None else -1
+                    'channel': local_channel if local_channel is not None else local_channel
                 }
 
         return result
@@ -341,8 +348,8 @@ def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Sessio
                         'You do not have permissions to add results, you must be member of "collectors" group in server')
             except:
                 print('Data were processed but weren\'t submitted to server')
-        except:
-            print('Error')
+        except Exception as e:
+            print('Error:', e)
 
 
 def logger(queue: multiprocessing.Queue):
@@ -387,7 +394,7 @@ if __name__ == "__main__":
     session = requests.Session()
     if not auth(session, args.host, args.username,
                 getpass.getpass(prompt='Password to authorize in {}: '.format(args.host))):
-        print('Username or password isn\'t correct')
+        print('Host, username or password isn\'t correct')
         exit(-1)
 
     queue = multiprocessing.Queue()
