@@ -30,7 +30,7 @@ let build_tbody = (async (response_data) => {
     let tbody = document.createElement("tbody");
 
     response_data.forEach((line) => {
-        let tr = document. createElement("tr");
+        let tr = document.createElement("tr");
         line.forEach((ceil) => {
             let td = document.createElement("td");
             td.appendChild(document.createTextNode(ceil[1]));
@@ -42,8 +42,6 @@ let build_tbody = (async (response_data) => {
 });
 
 let draw_table_in_div_block = (async (div_block_id, response_keys, response_data) => {
-    rows_count = response_keys.length;
-
     let parent = document.getElementById(div_block_id);
     parent.innerHTML = "";
 

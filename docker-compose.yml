@@ -6,8 +6,8 @@ services:
       dockerfile: "./Docker/dockerfile.pg"
       context: "."
     container_name: db
-    ports:
-      - "5432:5432"
+    #ports:
+    #  - "5432:5432"
     environment:
       - DEBUG=false
       - DB_USER=dot11admin
