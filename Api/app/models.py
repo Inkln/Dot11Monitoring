@@ -9,8 +9,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 # auth models
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'
-    #__table_args__ = {"schema": "private"}
+    __tablename__ = "users"
+    __table_args__ = {"schema": "private"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
@@ -29,7 +29,6 @@ class User(UserMixin, db.Model):
 
 # dot11 models
 class Auth(db.Model):
-    #__table_args__ = {"schema": "statistic"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     ap_mac = db.Column(db.String(32), index=True)
     client_mac = db.Column(db.String(32), index=True)
@@ -39,11 +38,10 @@ class Auth(db.Model):
     tries = db.Column(db.Integer)
 
     def __repr__(self):
-        return '<Auth {}>'.format(self.ap_mac, self.client_mac)
+        return "<Auth {}>".format(self.ap_mac, self.client_mac)
 
 
 class DataTransfer(db.Model):
-    #__table_args__ = {"schema": "statistic"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     ap_mac = db.Column(db.String(32), index=True)
     client_mac = db.Column(db.String(32), index=True)
@@ -52,11 +50,10 @@ class DataTransfer(db.Model):
     bytes = db.Column(db.Integer)
 
     def __repr__(self):
-        return '<Transfer from {} to >'.format(self.ap_mac, self.client_mac)
+        return "<Transfer from {} to >".format(self.ap_mac, self.client_mac)
 
 
 class Ap(db.Model):
-    #__table_args__ = {"schema": "statistic"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     ap_mac = db.Column(db.String(32), index=True)
     workspace = db.Column(db.String(256), primary_key=True)
@@ -68,11 +65,10 @@ class Ap(db.Model):
     comment = db.Column(db.String(1024), nullable=True)
 
     def __repr__(self):
-        return '<Ap {}:{}>'.format(self.ap_mac, self.essid)
+        return "<Ap {}:{}>".format(self.ap_mac, self.essid)
 
 
 class Client(db.Model):
-    #__table_args__ = {"schema": "statistic"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     client_mac = db.Column(db.String(32), index=True)
     workspace = db.Column(db.String(256), primary_key=True)
@@ -81,9 +77,9 @@ class Client(db.Model):
     comment = db.Column(db.String(1024), nullable=True)
 
     def __repr__(self):
-        return '<Client {}>'.format(self.client_mac)
+        return "<Client {}>".format(self.client_mac)
 
 
 @login.user_loader
-def load_user(id):
-    return User.query.get(int(id))
+def load_user(user_id: int):
+    return User.query.get(int(user_id))

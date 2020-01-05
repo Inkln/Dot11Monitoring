@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+
 try:
     from config import Config
 except Exception:
@@ -20,6 +21,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 
 from .utils.vendors import OfflineVendorsParser
+
 vendors_provider = OfflineVendorsParser()
 
 try:
@@ -28,6 +30,7 @@ except Exception:
     from app import models
 
 from .utils.graph_builder import GraphBuilder
+
 graph_builder = GraphBuilder(db=db)
 
 # database connection to allow users write own sql. MUST BE SAFETY or RDONLY
@@ -35,7 +38,8 @@ graph_builder = GraphBuilder(db=db)
 connections = {}
 try:
     import sqlalchemy
-    connections['read_only'] = sqlalchemy.create_engine(Config.LIMITED_DATABASE_URI)
+
+    connections["read_only"] = sqlalchemy.create_engine(Config.LIMITED_DATABASE_URI)
 except Exception:
     pass
 
@@ -46,17 +50,24 @@ except Exception:
     from app import routes
 
 
-login.login_view = 'index'
+login.login_view = "index"
+
 
 @app.before_first_request
 def insert_admin_into_db():
-    admin_from_db = db.session.query(models.User).filter_by(username='admin').first()
+    admin_from_db = db.session.query(models.User).filter_by(username="admin").first()
     if admin_from_db is not None:
         return
 
     admin_password = Config.ADMIN_PASSWORD
-    print('User \'admin\' created with password:', admin_password)
-    admin = models.User(username='admin', password_hash=generate_password_hash(admin_password),
-                        is_collector=True, is_admin=True, is_viewer=True, is_sql=True)
+    print("User 'admin' created with password:", admin_password)
+    admin = models.User(
+        username="admin",
+        password_hash=generate_password_hash(admin_password),
+        is_collector=True,
+        is_admin=True,
+        is_viewer=True,
+        is_sql=True,
+    )
     db.session.add(admin)
     db.session.commit()
