@@ -3,8 +3,8 @@ services:
   db:
     restart: on-failure
     build:
-      dockerfile: "./dockerfile.db"
-      context: "./Docker"
+      dockerfile: "./Docker/dockerfile.pg"
+      context: "."
     container_name: db
     ports:
       - "5432:5432"
