@@ -5,9 +5,9 @@ from flask import render_template, flash, abort, request
 from flask_login import login_required, current_user
 
 try:
-    from ...app import app, db, connections, Config
+    from ...app import app, connections, Config
 except Exception:
-    from app import app, db, connections, Config
+    from app import app, connections, Config
 
 
 @app.route("/sql", methods=["GET", "POST"])
@@ -20,7 +20,7 @@ def sql():
 
         return render_template("sql.html", seed=random.randint(0, 10 ** 9), title="Sql editor")
 
-    elif request.method == "POST":
+    if request.method == "POST":
         connection = connections["read_only"]
         if connection is None:
             try:
@@ -81,5 +81,5 @@ def sql():
                         "message": "database server rejected your request",
                     }
                 )
-    else:
-        abort(501)
+
+    abort(501)

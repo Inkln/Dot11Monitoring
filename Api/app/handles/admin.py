@@ -28,8 +28,8 @@ def admin():
             auths=db.session.query(Auth).order_by(Auth.id).all(),
             title="Admin page",
         )
-    elif request.method == "POST":
-        id = request.form["id"]
+    if request.method == "POST":
+        user_id = request.form["id"]
         username = request.form.get("username", "")
         password = request.form.get("password", "")
         is_viewer = request.form.get("is_viewer", False)
@@ -37,7 +37,7 @@ def admin():
         is_admin = request.form.get("is_admin", False)
         is_sql = request.form.get("is_sql", False)
 
-        to_bool = lambda x: False if x == False else True
+        to_bool = lambda x: False if not x else True
         is_viewer = to_bool(is_viewer)
         is_collector = to_bool(is_collector)
         is_admin = to_bool(is_admin)
@@ -46,7 +46,7 @@ def admin():
         action = request.form["action"]
 
         if action == "Edit and save":
-            user = User.query.filter_by(id=id).first()
+            user = User.query.filter_by(id=user_id).first()
             user.username = username
             user.is_viewer = is_viewer
             user.is_admin = is_admin
@@ -61,10 +61,9 @@ def admin():
             db.session.commit()
 
         elif action == "Delete":
-            User.query.filter_by(id=id).delete()
+            User.query.filter_by(id=user_id).delete()
             db.session.commit()
 
         return redirect("/admin")
 
-    else:
-        return redirect("/admin")
+    return abort(405)

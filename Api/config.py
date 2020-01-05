@@ -6,7 +6,7 @@ from Crypto.Random import get_random_bytes
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class Config(object):
+class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URI", "postgresql://dot11admin:dot11password@localhost/dot11monitor"
     )

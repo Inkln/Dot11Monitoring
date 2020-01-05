@@ -16,3 +16,6 @@ stop:
 pretty:
 	black -l 110 **/*.py
 	isort -y -s Api/app/__init__.py **/*.py
+
+lint:
+	pylint --rcfile .pylint Api
