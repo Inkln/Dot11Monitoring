@@ -7,7 +7,6 @@ COPY ./Docker/requirements.api.txt /
 RUN python3.6 -m pip install -r /requirements.api.txt
 
 COPY ./Api /Api
-COPY ./Docker /Docker
 
 EXPOSE 8000
 WORKDIR /Api

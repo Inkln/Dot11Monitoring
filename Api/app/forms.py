@@ -1,3 +1,4 @@
+from flask import flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SubmitField, PasswordField, HiddenField
 
@@ -20,11 +21,11 @@ class RegisterForm(FlaskForm):
     remember_me = BooleanField("Remember Me")
     submit = SubmitField("Register")
 
-    @staticmethod
-    def validate_username(username):
+    def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
-            raise ValidationError("Please use a different username.")
+            flash("Please use a different username")
+            raise ValidationError("Please use a different username")
 
 
 class EditForm(FlaskForm):
