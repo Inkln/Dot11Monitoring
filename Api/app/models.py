@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # auth models
 class User(UserMixin, db.Model):
     __tablename__ = "users"
-    #__table_args__ = {"schema": "private"}
+    __table_args__ = {"schema": "private"}
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)

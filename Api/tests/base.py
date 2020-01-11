@@ -33,4 +33,5 @@ def test_index_page(get_app_and_client):
     app, client = get_app_and_client
     response = client.get('/')
     assert response.status == '200 OK'
-
+    assert response.data.decode('utf-8').find('Login') >= 0
+    assert response.data.decode('utf-8').find('Register') >= 0
