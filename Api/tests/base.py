@@ -2,13 +2,17 @@ import os
 import sys
 import requests
 
+from typing import Tuple, List
+
+from flask import Flask
+from flask.testing import FlaskClient
 import pytest
 
 TESTDIR = os.path.dirname(__file__)
 
 
 @pytest.fixture(scope='function')
-def get_app_and_client():
+def get_app_and_client() -> Tuple[Flask, FlaskClient]:
     try:
         from ..app import app, db
     except Exception:
@@ -25,6 +29,8 @@ def get_app_and_client():
     return app, client
 
 
-def test_base(get_app_and_client):
+def test_index_page(get_app_and_client):
     app, client = get_app_and_client
-    assert 1 == 1
+    response = client.get('/')
+    assert response.status == '200 OK'
+
