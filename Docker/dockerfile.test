@@ -1,0 +1,16 @@
+FROM python:3.6-alpine as base
+
+RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
+
+RUN python3.6 -m pip install pip --upgrade
+COPY ./Docker/requirements.api.txt /
+RUN python3.6 -m pip install -r /requirements.api.txt
+
+COPY ./Api /Api
+
+EXPOSE 8000
+WORKDIR /Api
+
+ENV LANG C.UTF-8
+
+ENTRYPOINT ["./tests.sh"]

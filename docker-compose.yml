@@ -6,8 +6,6 @@ services:
       dockerfile: "./Docker/dockerfile.pg"
       context: "."
     container_name: db
-    #ports:
-    #  - "5432:5432"
     environment:
       - DEBUG=false
       - DB_USER=dot11admin
@@ -15,7 +13,6 @@ services:
       - DB_NAME=dot11monitor
     volumes:
       - /srv/docker/postgresql:/var/lib/postgresql
-
 
   api:
     depends_on:
@@ -34,3 +31,32 @@ services:
       - LIMITED_DATABASE_URI=postgresql://dot11viewer:dot11password@db/dot11monitor
       # default password for admin user if not exists
       - ADMIN_PASSWORD=admin
+
+  test:
+    depends_on:
+      - test_db
+    container_name: test
+    restart: on-failure
+    build:
+      dockerfile: "./Docker/dockerfile.test"
+      context: "."
+    ports:
+      - "80:5000"
+    environment:
+      - DATABASE_URI=postgresql://dot11admin:dot11password@test_db/dot11monitor
+      - LIMITED_DATABASE_URI=postgresql://dot11viewer:dot11password@test_db/dot11monitor
+      - ADMIN_PASSWORD=admin
+
+  test_db:
+    restart: on-failure
+    build:
+      dockerfile: "./Docker/dockerfile.pg"
+      context: "."
+    container_name: test_db
+    environment:
+      - DEBUG=false
+      - DB_USER=dot11admin
+      - DB_PASS=dot11password
+      - DB_NAME=dot11monitor
+    volumes:
+      - /srv/docker/postgresql:/var/lib/postgresql

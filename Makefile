@@ -5,10 +5,10 @@ rebuild:
 	docker-compose build --no-cache
 
 up:
-	docker-compose up
+	docker-compose up api
 
 up-daemon:
-	docker-compose up -d
+	docker-compose up api -d
 
 stop:
 	docker-compose stop
@@ -19,3 +19,6 @@ pretty:
 
 lint:
 	pylint --rcfile .pylint Api
+
+test:
+	docker-compose up --build --abort-on-container-exit test
