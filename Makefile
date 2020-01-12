@@ -21,4 +21,4 @@ lint:
 	pylint --rcfile .pylint Api
 
 test:
-	docker-compose up --build --abort-on-container-exit --exit-code-from test test
+	docker-compose up --build --abort-on-container-exit --exit-code-from test test test_db
