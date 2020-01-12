@@ -40,7 +40,7 @@
     {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
     {% for category, message in messages %}
-    <div id="Modal" class="modal" tabindex="-1" role="dialog">
+    <div id="Modal{{ loop.index }}" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -60,7 +60,7 @@
     </div>
     <script>
         $(document).ready(function () {
-            $("#Modal").modal();
+            $("#Modal{{ loop.index }}").modal();
         });
     </script>
     {% endfor %}

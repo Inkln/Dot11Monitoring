@@ -59,8 +59,7 @@ def insert_admin_into_db():
     if admin_from_db is not None:
         return
 
-    admin_password = Config.ADMIN_PASSWORD
-    print("User 'admin' created with password:", admin_password)
+    admin_password = app.config['ADMIN_PASSWORD']
     admin = models.User(
         username="admin",
         password_hash=generate_password_hash(admin_password),
@@ -71,3 +70,4 @@ def insert_admin_into_db():
     )
     db.session.add(admin)
     db.session.commit()
+    print("User 'admin' created with password:", admin_password)

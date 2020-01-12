@@ -45,7 +45,6 @@ services:
     environment:
       - DATABASE_URI=postgresql://dot11admin:dot11password@test_db/dot11monitor
       - LIMITED_DATABASE_URI=postgresql://dot11viewer:dot11password@test_db/dot11monitor
-      - ADMIN_PASSWORD=admin
 
   test_db:
     restart: on-failure
@@ -58,5 +57,5 @@ services:
       - DB_USER=dot11admin
       - DB_PASS=dot11password
       - DB_NAME=dot11monitor
-    volumes:
-      - /srv/docker/postgresql:/var/lib/postgresql
+    # volumes:
+    #   - /srv/docker/postgresql:/var/lib/postgresql
