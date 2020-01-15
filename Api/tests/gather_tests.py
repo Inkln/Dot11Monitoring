@@ -135,5 +135,5 @@ class TestGather(TestCase):
         """
         self.login('admin', 'admin_password')
         response = self.client.post('/add_result', json='lol kek')
-        assert response.status == '302 FOUND'
-        assert response.status_code == 302
+        assert response.status == '406 NOT ACCEPTABLE'
+        assert response.status_code == 406

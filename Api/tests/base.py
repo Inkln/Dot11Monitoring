@@ -29,7 +29,7 @@ def get_app_and_client() -> Tuple[Flask, FlaskClient]:
     app.config['ADMIN_PASSWORD'] = 'admin_password'
 
     db.create_all()
-    insert_admin_into_db()
+
     client = app.test_client(use_cookies=True)
 
     return app, client

@@ -1,17 +1,14 @@
 import os
 import sys
 import requests
-import json
-import random
-import string
 
 from typing import Tuple, List
 
 from flask import Flask
 from flask.testing import FlaskClient
 import pytest
-
 from flask_testing import TestCase, LiveServerTestCase
+import flask_testing
 try:
     from ..models import User, Ap, Auth, Client, DataTransfer
     from ...app import app, db
@@ -20,12 +17,9 @@ except Exception:
     from app import app, db
 
 TESTDIR = os.path.dirname(__file__)
-<<<<<<< Updated upstream
-=======
 import json
 import random
 import string
->>>>>>> Stashed changes
 
 
 def get_random_string(string_length=15):
@@ -231,8 +225,4 @@ class TestMonitor(TestCase):
         assert 'ok' in response.data.decode('utf-8')
         assert response.status == '200 OK'
         assert response.status_code == 200
-<<<<<<< Updated upstream
         assert 'denied' not in response.data.decode('utf-8')
-=======
-        assert 'denied' not in response.data.decode('utf-8')
->>>>>>> Stashed changes
