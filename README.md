@@ -151,3 +151,10 @@ This page allow users to write custom sql requests to database. You are in read 
 [admin_users]: ./screenshots/admin_users.png
 [sql_editor]: ./screenshots/sql_editor.png
 [sql_results]: ./screenshots/sql_result.png
+
+### Development
+
+1. Install checkers and linters ```pip install black isort pylint```
+2. Make code pretty ```make pretty```
+3. Run tests ```make test```
+4. Check code style via pylint ```make lint```
