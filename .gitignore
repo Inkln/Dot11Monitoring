@@ -3,6 +3,7 @@
 *.pyc
 *.swp
 *.pcapng
+!*sample.pcapng
 temp/*
 dist/*
 build/*

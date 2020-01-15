@@ -165,7 +165,7 @@ class Decoder:
 
                 local_channel = channel
                 try:
-                    local_channel = packet.getlayer(scapy.layers.dot11.RadioTap).Channel
+                    local_channel = packet.getlayer(scapy.layers.dot11.RadioTap).ChannelFrequency
                 except Exception:
                     pass
 
