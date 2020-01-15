@@ -1,6 +1,7 @@
 import os
 import sys
 import requests
+import json
 import random
 import string
 
@@ -19,13 +20,7 @@ except Exception:
     from app import app, db
 
 TESTDIR = os.path.dirname(__file__)
-<<<<<<< Updated upstream
-import json
-import random
-import string
 
-=======
->>>>>>> Stashed changes
 
 def get_random_string(string_length=15):
     """

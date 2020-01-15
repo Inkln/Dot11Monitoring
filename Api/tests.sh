@@ -27,9 +27,9 @@ done;
 
 echo 'DB IS INITIALISED, READY TO START TESTS'
 
-coverage run -m pytest -s tests/monitor_tests.py #tests/*.py
+coverage run -m pytest -s tests/*.py
 status_code=$?
-coverage report -m --omit="tests/*","__init__.py" --include="**/*.py" --fail-under 90
+coverage report -m --omit="tests/*","__init__.py","*/collection_service.py" --include="**/*.py" --fail-under 90
 coverage_status=$?
 if [[ $coverage_status -eq 2 ]];
 then

@@ -15,4 +15,4 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", b64encode(get_random_bytes(256)))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TEMPLATES_AUTO_RELOAD = True
-    WTF_CSRF_ENABLED = False if os.getenv("DISABLE_CSRF", "false").lower() == "true" else True
+    WTF_CSRF_ENABLED = False if os.getenv("DISABLE_CSRF", "").lower() == "true" else True

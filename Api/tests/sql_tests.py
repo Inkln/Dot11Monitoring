@@ -140,9 +140,9 @@ class TestSQL(TestCase):
         self.login('admin', 'admin_password')
         response = self.client.post('/sql', data=json.dumps({'request': 'select * from AP'}))
         keys = set(("id", "ap_mac", "workspace", "mac_vendor", "essid", "channel", "privacy", "comment"))
-        print('AP')
-        print(response.data)
-        print('='*10)
+        # print('AP')
+        # print(response.data)
+        # print('='*10)
         assert json.loads(response.data)['status'] == 'OK'
         assert set(json.loads(response.data)['keys']) == keys
         assert response.status == '200 OK'
@@ -155,9 +155,9 @@ class TestSQL(TestCase):
         self.login('admin', 'admin_password')
         response = self.client.post('/sql', data=json.dumps({'request': 'select * from AUTH'}))
         keys = set(("id", "ap_mac", "client_mac", "workspace", "stage", "tries"))
-        print('AUTH')
-        print(response.data)
-        print('=' * 10)
+        # print('AUTH')
+        # print(response.data)
+        # print('=' * 10)
         assert json.loads(response.data)['status'] == 'OK'
         assert set(json.loads(response.data)['keys']) == keys
         assert response.status == '200 OK'
@@ -169,9 +169,9 @@ class TestSQL(TestCase):
         """
         self.login('admin', 'admin_password')
         response = self.client.post('/sql', data=json.dumps({'request': 'select * from CLIENT'}))
-        print('CLIENT')
-        print(response.data)
-        print('=' * 10)
+        # print('CLIENT')
+        # print(response.data)
+        # print('=' * 10)
         keys = set(("id", "client_mac", "workspace", "mac_vendor", "comment"))
         assert json.loads(response.data)['status'] == 'OK'
         assert set(json.loads(response.data)['keys']) == keys
