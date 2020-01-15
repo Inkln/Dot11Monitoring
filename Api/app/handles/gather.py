@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, abort
 from flask_login import current_user, login_required
 
 try:
@@ -15,7 +15,7 @@ except Exception:
 @login_required
 def receive_scanner_result():
     if not current_user.is_collector:
-        return "Permission denied", 403
+        abort(403)
 
     result = request.get_json()
     workspace = result["workspace"]
@@ -81,4 +81,4 @@ def receive_scanner_result():
                 exists.tries = tries
 
     db.session.commit()
-    return "OK"
+    return "OK", 200
