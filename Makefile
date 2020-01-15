@@ -8,7 +8,7 @@ up:
 	docker-compose up api
 
 up-daemon:
-	docker-compose up api -d
+	docker-compose up -d api
 
 stop:
 	docker-compose stop
