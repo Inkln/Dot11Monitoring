@@ -336,7 +336,9 @@ def auth(session: requests.Session, uri: str, username: str, password: str):
         return False
 
 
-def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Session, url: str, verbose: bool = False):
+def worker(
+    queue: multiprocessing.Queue, session_to_send_result: requests.Session, url: str, verbose: bool = False
+):
     decoder = Decoder
     while True:
         try:
@@ -389,7 +391,8 @@ def main(args: argparse.Namespace):
 
     queue = multiprocessing.Queue()
     workers = [
-        multiprocessing.Process(target=worker, args=(queue, session, args.host, args.verbose)) for _ in range(args.workers)
+        multiprocessing.Process(target=worker, args=(queue, session, args.host, args.verbose))
+        for _ in range(args.workers)
     ]
     for worker in workers:
         worker.start()
