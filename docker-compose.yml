@@ -36,7 +36,7 @@ services:
     depends_on:
       - test_db
     container_name: test
-    restart: on-failure
+    # restart: on-failure
     build:
       dockerfile: "./Docker/dockerfile.test"
       context: "."

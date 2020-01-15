@@ -15,6 +15,7 @@ TESTDIR = os.path.dirname(__file__)
 import random
 import string
 
+
 def get_random_string(string_length=15):
     """
     Generate a random string of fixed length

@@ -15,7 +15,7 @@ read directly from a network interface that is set to monitor mode.
 
   1. Install python3 (```apt install python3 python3-pip``` on Ubuntu)
 
-  2. Install scapy and requests libraries (```pip install scapy requests```).
+  2. Install scapy, tqdm and requests libraries (```pip install scapy requests tqdm```).
   TODO use ```libpoco and libtins``` and rewrite service on C++ to get more efficiency.
 
   ### Usage of collector
@@ -158,3 +158,4 @@ This page allow users to write custom sql requests to database. You are in read 
 2. Make code pretty ```make pretty```
 3. Run tests ```make test```
 4. Check code style via pylint ```make lint```
+

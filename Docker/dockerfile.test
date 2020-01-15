@@ -3,10 +3,12 @@ FROM python:3.6-alpine as base
 RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
 
 RUN python3.6 -m pip install pip --upgrade
-COPY ./Docker/requirements.api.txt /
-RUN python3.6 -m pip install -r /requirements.api.txt
+COPY ./Docker/requirements.test.txt /
+RUN python3.6 -m pip install -r /requirements.test.txt
 
 COPY ./Api /Api
+COPY ./Collector/tests/* /Api/tests/
+COPY ./Collector/collection_service.py /Api/
 
 EXPOSE 8000
 WORKDIR /Api
