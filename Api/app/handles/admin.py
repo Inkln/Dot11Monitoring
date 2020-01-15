@@ -38,7 +38,7 @@ def admin():
         is_sql = request.form.get("is_sql", "none")
 
         to_bool = lambda x: True if x == "on" or x.lower() == "true" else \
-            False if x.lower == "none" or x.lower() == "false" else None
+            False if x.lower() == "none" or x.lower() == "false" else None
 
         is_viewer = to_bool(is_viewer)
         is_collector = to_bool(is_collector)
