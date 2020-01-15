@@ -27,7 +27,7 @@ done;
 
 echo 'DB IS INITIALISED, READY TO START TESTS'
 
-coverage run -m pytest -s tests/*.py
+coverage run -m pytest -s tests/monitor_tests.py #tests/*.py
 status_code=$?
 coverage report -m --omit="tests/*","__init__.py" --include="**/*.py"
 exit $status_code

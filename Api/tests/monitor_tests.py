@@ -17,7 +17,7 @@ except Exception:
     from app import app, db
 
 TESTDIR = os.path.dirname(__file__)
-
+import json
 import random
 import string
 
@@ -33,7 +33,6 @@ def get_random_string(string_length=15):
 
 
 class TestMonitor(TestCase):
-    # ToDo test for privileged user
     def create_app(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
@@ -77,13 +76,17 @@ class TestMonitor(TestCase):
                                          'is_collector': is_collector,
                                          'is_sql': is_sql,
                                          'action': "Edit and save"})
-        user = db.session.query(User).filter(User.username == username)[0]
-        assert user.is_viewer == is_viewer
-        assert user.is_collector == is_collector
-        assert user.is_sql == is_sql
         self.client.get('/logout')
 
-'''
+    def add_test_data(self):
+        self.client.get('/logout')
+        self.login('admin', 'admin_password')
+        with open('./tests/add_result.json') as F:
+            results = F.read()
+        self.login('admin', 'admin_password')
+        response = self.client.post('/add_result', json=json.loads(results))
+        self.client.get('/logout')
+
     def test_monitor_1(self):
         """
         non-privileged user goes to page "monitor"
@@ -113,6 +116,21 @@ class TestMonitor(TestCase):
         assert response.status == '200 OK'
         assert response.status_code == 200
 
+    def test_monitor_4(self):
+        """
+        get test monitor
+        """
+        self.add_test_data()
+        self.login('admin', 'admin_password')
+        response = self.client.get('/monitor?workspace=test_workspace')
+        # print(response.data)
+        # assert len(json.loads(response.data)) > 0
+        # assert len(json.loads(response.data)) > 0
+        assert 'ok' in response.data.decode('utf-8')
+        assert response.status == '200 OK'
+        assert response.status_code == 200
+        assert 'denied' not in response.data.decode('utf-8')
+
     def test_graph_1(self):
         """
         non-privileged user goes to page "get_graph"
@@ -140,10 +158,28 @@ class TestMonitor(TestCase):
         username, password = self.register_random_client()
         self.set_right_to_user(username, is_viewer=True)
         self.login(username, password)
+        db = self.create_db()
+        user = db.session.query(User).filter(User.username == username)[0]
+        assert user.is_viewer
         response = self.client.get('/get_graph')
         assert 'ok' in response.data.decode('utf-8')
         assert response.status == '200 OK'
         assert response.status_code == 200
+        assert 'denied' not in response.data.decode('utf-8')
+
+    def test_graph_4(self):
+        """
+        get test graph
+        """
+        self.add_test_data()
+        self.login('admin', 'admin_password')
+        response = self.client.get('/get_graph?workspace=test_workspace')
+        assert len(json.loads(response.data)['data']['nodes']) == 56
+        assert len(json.loads(response.data)['data']['edges']) == 48
+        assert 'ok' in response.data.decode('utf-8')
+        assert response.status == '200 OK'
+        assert response.status_code == 200
+        assert 'denied' not in response.data.decode('utf-8')
 
     def test_workspaces_1(self):
         """
@@ -176,4 +212,17 @@ class TestMonitor(TestCase):
         assert 'ok' in response.data.decode('utf-8')
         assert response.status == '200 OK'
         assert response.status_code == 200
-'''
+        assert 'denied' not in response.data.decode('utf-8')
+
+    def test_workspaces_4(self):
+        """
+        get test workspaces
+        """
+        self.add_test_data()
+        self.login('admin', 'admin_password')
+        response = self.client.get('/get_workspaces')
+        assert json.loads(response.data)['data'][0] == 'test_workspace'
+        assert 'ok' in response.data.decode('utf-8')
+        assert response.status == '200 OK'
+        assert response.status_code == 200
+        assert 'denied' not in response.data.decode('utf-8')

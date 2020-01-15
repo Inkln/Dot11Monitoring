@@ -117,12 +117,12 @@ class TestAdmin(TestCase):
         user = db.session.query(User).filter(User.username==username)[0]
         user_id = user.id
         self.client.get('/admin')
-        response = self.client.post('/admin', data={'id': user_id,
+        response = self.client.post('/admin', data={'id':user_id,
                                                     'username': username,
-                                                    'is_viewer': "on",
-                                                    'is_collector': "on",
-                                                    'is_sql': "on",
-                                                    'action': "Edit and save"})
+                                                    'is_viewer': True,
+                                                    'is_collector': True,
+                                                    'is_sql': True,
+                                                    'action':"Edit and save"})
 
         user = db.session.query(User).filter(User.username == username)[0]
         assert user.is_viewer == True
@@ -142,29 +142,21 @@ class TestAdmin(TestCase):
         user = db.session.query(User).filter(User.username==username)[0]
         user_id = user.id
         self.client.get('/admin')
-        self.client.post('/admin', data={'id': user_id,
+        self.client.post('/admin', data={'id':user_id,
                                          'username': username,
-                                         'password': user.password_hash,
                                          'is_viewer': True,
                                          'is_collector': True,
                                          'is_sql': True,
-                                         'action': "Edit and save"})
-
-        user = db.session.query(User).filter(User.username == username)[0]
-        assert user.is_viewer == True
-        assert user.is_collector == True
-        assert user.is_sql == True
+                                         'action':"Edit and save"})
 
         response = self.client.post('/admin', data={'id': user_id,
                                                     'username': username,
-                                                    'password': user.password_hash,
                                                     'is_viewer': False,
                                                     'is_collector': False,
                                                     'is_sql': False,
                                                     'action': "Edit and save"})
 
         user = db.session.query(User).filter(User.username == username)[0]
-
         assert user.is_viewer == False
         assert user.is_collector == False
         assert user.is_sql == False
@@ -182,10 +174,10 @@ class TestAdmin(TestCase):
         user = db.session.query(User).filter(User.username==username)[0]
         user_id = user.id
         self.client.get('/admin')
-        self.client.post('/admin', data={'id': user_id,
+        self.client.post('/admin', data={'id':user_id,
                                          'username': username,
                                          'is_admin': True,
-                                         'action': "Edit and save"})
+                                         'action':"Edit and save"})
 
         user = db.session.query(User).filter(User.username == username)[0]
         self.client.get('/logout')
@@ -205,10 +197,10 @@ class TestAdmin(TestCase):
         user = db.session.query(User).filter(User.username==username)[0]
         user_id = user.id
         self.client.get('/admin')
-        self.client.post('/admin', data={'id': user_id,
+        self.client.post('/admin', data={'id':user_id,
                                          'username': username,
                                          'is_admin': True,
-                                         'action': "Edit and save"})
+                                         'action':"Edit and save"})
 
         self.client.post('/admin', data={'id': user_id,
                                          'username': username,
@@ -254,14 +246,13 @@ class TestAdmin(TestCase):
         user = db.session.query(User).filter(User.username==username)[0]
         user_id = user.id
         self.client.get('/admin')
-        response = self.client.post('/admin', data={'id': user_id,
+        response = self.client.post('/admin', data={'id':user_id,
                                                     'username': username,
                                                     'is_viewer': True,
-                                                    'action': "Delete"})
+                                                    'action':"Delete"})
 
         n_user = db.session.query(User).filter(User.username == username).count()
         assert n_user == 0
         assert response.status == '302 FOUND'
         assert response.status_code == 302
         self.assertRedirects(response, '/admin')
-
