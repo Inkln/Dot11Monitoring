@@ -32,12 +32,14 @@ def admin():
         user_id = request.form["id"]
         username = request.form.get("username", "")
         password = request.form.get("password", "")
-        is_viewer = request.form.get("is_viewer", False)
-        is_collector = request.form.get("is_collector", False)
-        is_admin = request.form.get("is_admin", False)
-        is_sql = request.form.get("is_sql", False)
+        is_viewer = request.form.get("is_viewer", "none")
+        is_collector = request.form.get("is_collector", "none")
+        is_admin = request.form.get("is_admin", "none")
+        is_sql = request.form.get("is_sql", "none")
 
-        to_bool = lambda x: False if not x else True
+        to_bool = lambda x: True if x == "on" or x.lower() == "true" else \
+            False if x.lower == "none" or x.lower() == "false" else None
+
         is_viewer = to_bool(is_viewer)
         is_collector = to_bool(is_collector)
         is_admin = to_bool(is_admin)
@@ -47,16 +49,22 @@ def admin():
 
         if action == "Edit and save":
             user = User.query.filter_by(id=user_id).first()
-            user.username = username
-            user.is_viewer = is_viewer
-            user.is_admin = is_admin
-            user.is_collector = is_collector
-            user.is_sql = is_sql
+            if username != "":
+                user.username = username
+            if is_viewer is not None:
+                user.is_viewer = is_viewer
+            if is_admin is not None:
+                user.is_admin = is_admin
+            if is_collector is not None:
+                user.is_collector = is_collector
+            if is_sql is not None:
+                user.is_sql = is_sql
 
-            if password[:7] == "pbkdf2:":
-                user.password_hash = password
-            else:
-                user.set_password(password)
+            if password != "":
+                if password[:7] == "pbkdf2:":
+                    user.password_hash = password
+                else:
+                    user.set_password(password)
 
             db.session.commit()
 
