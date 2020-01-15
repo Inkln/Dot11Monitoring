@@ -297,7 +297,7 @@ class Decoder:
         return result
 
 
-def CollectInfo(interface: str, channels: Union[List[int], Tuple[int, ...]], timeout: Union[int, float]):
+def collect_info(interface: str, channels: Union[List[int], Tuple[int, ...]], timeout: Union[int, float]):
     result = []
     for channel in tqdm.tqdm(channels):
         scanner = ScannerEpoch(interface=interface, channel=channel, timeout=timeout)
@@ -336,7 +336,7 @@ def auth(session: requests.Session, uri: str, username: str, password: str):
         return False
 
 
-def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Session, url: str):
+def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Session, url: str, verbose: bool = False):
     decoder = Decoder
     while True:
         try:
@@ -354,12 +354,18 @@ def worker(queue: multiprocessing.Queue, session_to_send_result: requests.Sessio
             res["workspace"] = workspace
             try:
                 resp = session_to_send_result.post(url + "/add_result", json=res)
-                if resp.text == "Permission denied":
+                if resp.status_code == 403:
                     print(
                         'You do not have permissions to add results, you must be member of "collectors" group in server'
                     )
-            except:
+                else:
+                    if verbose:
+                        print("Data was sent:")
+                        print(res)
+            except Exception as e:
                 print("Data were processed but weren't submitted to server")
+                if verbose:
+                    print("Error: {}".format(e))
         except Exception as e:
             print("Error:", e)
 
@@ -368,6 +374,64 @@ def logger(queue: multiprocessing.Queue):
     while True:
         print(">> {} active tasks".format(queue.qsize()) + " " * 10, end="\r")
         time.sleep(0.5)
+
+
+def main(args: argparse.Namespace):
+    session = requests.Session()
+    if not auth(
+        session,
+        args.host,
+        args.username,
+        getpass.getpass(prompt="Password to authorize in {}: ".format(args.host)),
+    ):
+        print("Host, username or password isn't correct")
+        exit(-1)
+
+    queue = multiprocessing.Queue()
+    workers = [
+        multiprocessing.Process(target=worker, args=(queue, session, args.host, args.verbose)) for _ in range(args.workers)
+    ]
+    for worker in workers:
+        worker.start()
+
+    log = multiprocessing.Process(target=logger, args=(queue,))
+    log.start()
+
+    # process input files
+    if args.file is not None:
+        print("Opening pcap files: ")
+        for file in args.file:
+            print("> {}".format(file))
+            queue.put((file, args.workspace))
+        print("-" * 50)
+    else:
+        print("Pcap files wasn't found")
+
+    scans = 0
+
+    # scan
+    if args.interface is not None:
+        print("Scaning interfaces {} for {} iterations".format(args.interface, args.iterations))
+        if not args.channel:
+            args.channel = [None]
+
+        if args.iterations == -1:
+            args.iterations = int(1e10)
+        for _ in range(args.iterations):
+            for channel in args.channel:
+                print("Channel: {}, Interface: {}".format(channel, args.interface))
+                result = ScannerEpoch(interface=args.interface, channel=channel, timeout=args.timeout)
+                pcap = result.scan().get_result()
+                queue.put((pickle.dumps(pcap), args.workspace))
+
+    for _ in range(args.workers):
+        queue.put(None)
+
+    for worker in workers:
+        worker.join()
+
+    log.terminate()
+    log.join()
 
 
 if __name__ == "__main__":
@@ -434,65 +498,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     if args.verbose:
-        print(args)
+        print("Args:", args)
 
     if args.file is None and args.interface is None:
         print("Input pcap file or interface must be specified")
 
     args.host = args.host if args.host.startswith("http") else "http://" + args.host
 
-    session = requests.Session()
-    if not auth(
-        session,
-        args.host,
-        args.username,
-        getpass.getpass(prompt="Password to authorize in {}: ".format(args.host)),
-    ):
-        print("Host, username or password isn't correct")
-        exit(-1)
-
-    queue = multiprocessing.Queue()
-    workers = [
-        multiprocessing.Process(target=worker, args=(queue, session, args.host)) for _ in range(args.workers)
-    ]
-    for worker in workers:
-        worker.start()
-
-    log = multiprocessing.Process(target=logger, args=(queue,))
-    log.start()
-
-    # process input files
-    if args.file is not None:
-        print("Opening pcap files: ")
-        for file in args.file:
-            print("> {}".format(file))
-            queue.put((file, args.workspace))
-        print("-" * 50)
-    else:
-        print("Pcap files wasn't found")
-
-    scans = 0
-
-    # scan
-    if args.interface is not None:
-        print("Scaning interfaces {} for {} iterations".format(args.interface, args.iterations))
-        if not args.channel:
-            args.channel = [None]
-
-        if args.iterations == -1:
-            args.iterations = int(1e10)
-        for _ in range(args.iterations):
-            for channel in args.channel:
-                print("Channel: {}, Interface: {}".format(channel, args.interface))
-                result = ScannerEpoch(interface=args.interface, channel=channel, timeout=args.timeout)
-                pcap = result.scan().get_result()
-                queue.put((pickle.dumps(pcap), args.workspace))
-
-    for _ in range(args.workers):
-        queue.put(None)
-
-    for worker in workers:
-        worker.join()
-
-    log.terminate()
-    log.join()
+    main(args)

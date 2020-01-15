@@ -1,0 +1,356 @@
+{
+  'visible_aps': {
+    '00:26:88:f4:bf:4c': {
+      'essid': 'mipt-welcome',
+      'privacy': 'open',
+      'channel': None
+    },
+    '00:26:ca:f4:bf:4c': {
+      'essid': 'mipt-ng',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '00:26:ca:f4:c1:da': {
+      'essid': 'mipt-ng',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '90:94:97:bc:9f:6b': {
+      'essid': 'HUAWEI P20 lite',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '9e:93:4e:79:09:94': {
+      'essid': 'DIRECT-BhWorkCentre 3335',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '18:31:bf:05:71:70': {
+      'essid': 'CME',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '50:ff:20:0e:62:ce': {
+      'essid': 'Keenetic-2731',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '30:a1:fa:50:05:58': {
+      'essid': 'Honor 10 Lite',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '00:26:ca:f4:be:95': {
+      'essid': 'mipt-ng',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '00:26:88:f4:be:95': {
+      'essid': 'mipt-welcome',
+      'privacy': 'open',
+      'channel': None
+    },
+    'd8:c7:c8:f4:be:95': {
+      'essid': 'mipt',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '50:64:2b:ce:66:de': {
+      'essid': 'Skuma_deshevo',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    'b4:fb:e4:91:b6:fd': {
+      'essid': '',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    'd8:c7:c8:f4:bf:57': {
+      'essid': 'mipt',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '00:26:ca:f4:bf:57': {
+      'essid': 'mipt-ng',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '00:26:88:f4:bf:57': {
+      'essid': 'mipt-welcome',
+      'privacy': 'open',
+      'channel': None
+    },
+    'd8:c7:c8:f4:bf:4c': {
+      'essid': 'mipt',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    '00:26:88:f4:c1:da': {
+      'essid': 'mipt-welcome',
+      'privacy': 'open',
+      'channel': None
+    },
+    'd8:c7:c8:f4:c1:da': {
+      'essid': 'mipt',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    'b0:be:76:72:54:d6': {
+      'essid': 'Dattebayo',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    'dc:9f:db:ff:d7:20': {
+      'essid': 'CET-MIPT',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    'cc:2d:e0:ab:3f:d7': {
+      'essid': 'neurus_2G',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    'b0:be:76:72:80:c0': {
+      'essid': '505-2-SK&SM',
+      'privacy': 'wpa2',
+      'channel': None
+    },
+    'b4:fb:e4:91:b5:f4': {
+      'essid': '',
+      'privacy': 'wpa2',
+      'channel': None
+    }
+  },
+  'visible_clients': {
+    '5c:f9:38:99:13:34': {},
+    '68:14:01:bb:a3:97': {},
+    '8a:84:06:19:0b:44': {},
+    '8c:85:90:6b:b1:f1': {},
+    '8c:85:90:75:e5:a0': {},
+    'f0:18:98:5f:d9:b0': {},
+    '40:f0:2f:16:3c:fe': {},
+    'f0:18:98:0c:73:af': {},
+    'e0:ac:cb:97:28:f6': {},
+    '3c:2e:f9:a3:89:df': {},
+    '8c:f5:a3:2c:9b:cd': {},
+    'e0:aa:96:b4:ae:74': {},
+    'b8:e8:56:48:f0:06': {},
+    '94:65:9c:c6:9c:65': {},
+    '74:d2:1d:0d:66:ca': {},
+    '04:d1:3a:d5:c7:88': {},
+    '34:41:5d:bb:ee:32': {},
+    '48:2c:a0:73:35:35': {},
+    '3c:f0:11:46:ae:9c': {},
+    '44:85:00:b6:dc:b7': {},
+    'a4:83:e7:15:cd:94': {},
+    'd4:38:9c:a6:e8:63': {},
+    'f8:94:c2:b2:de:00': {},
+    'b0:e5:ed:fe:97:e6': {},
+    '40:a3:cc:ff:58:b6': {},
+    '00:e6:66:27:eb:fa': {},
+    '58:e2:8f:80:9d:8d': {},
+    '18:81:0e:38:3f:15': {},
+    'a4:e9:75:39:17:cb': {},
+    'b8:5d:0a:b1:ef:28': {},
+    'a4:e9:75:40:0c:d2': {},
+    '98:46:0a:0e:08:cd': {}
+  },
+  'client_ap_data_transfer': [
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '5c:f9:38:99:13:34',
+      'bytes': 3602
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '68:14:01:bb:a3:97',
+      'bytes': 1317
+    },
+    {
+      'ap': '00:26:ca:f4:be:95',
+      'client': '8a:84:06:19:0b:44',
+      'bytes': 35334
+    },
+    {
+      'ap': '90:94:97:bc:9f:6b',
+      'client': '8c:85:90:6b:b1:f1',
+      'bytes': 46398
+    },
+    {
+      'ap': '00:26:ca:f4:bf:4c',
+      'client': '8c:85:90:75:e5:a0',
+      'bytes': 339659
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'f0:18:98:5f:d9:b0',
+      'bytes': 17486
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '40:f0:2f:16:3c:fe',
+      'bytes': 471567
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'f0:18:98:0c:73:af',
+      'bytes': 2132180
+    },
+    {
+      'ap': '00:26:ca:f4:bf:4c',
+      'client': 'e0:ac:cb:97:28:f6',
+      'bytes': 955708
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '3c:2e:f9:a3:89:df',
+      'bytes': 12003
+    },
+    {
+      'ap': 'd8:c7:c8:f4:c1:da',
+      'client': '8c:f5:a3:2c:9b:cd',
+      'bytes': 2313
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'e0:aa:96:b4:ae:74',
+      'bytes': 27831
+    },
+    {
+      'ap': '00:26:ca:f4:bf:4c',
+      'client': 'b8:e8:56:48:f0:06',
+      'bytes': 273851
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '94:65:9c:c6:9c:65',
+      'bytes': 10278574
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '74:d2:1d:0d:66:ca',
+      'bytes': 5100
+    },
+    {
+      'ap': '30:a1:fa:50:05:58',
+      'client': '04:d1:3a:d5:c7:88',
+      'bytes': 6706
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '34:41:5d:bb:ee:32',
+      'bytes': 6033
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '48:2c:a0:73:35:35',
+      'bytes': 151919
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '3c:f0:11:46:ae:9c',
+      'bytes': 20771
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '44:85:00:b6:dc:b7',
+      'bytes': 53288
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'a4:83:e7:15:cd:94',
+      'bytes': 26520
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'd4:38:9c:a6:e8:63',
+      'bytes': 3431
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'f8:94:c2:b2:de:00',
+      'bytes': 182075
+    },
+    {
+      'ap': '00:26:ca:f4:bf:4c',
+      'client': '68:14:01:bb:a3:97',
+      'bytes': 67805
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'b0:e5:ed:fe:97:e6',
+      'bytes': 4260
+    },
+    {
+      'ap': '00:26:ca:f4:bf:57',
+      'client': '40:a3:cc:ff:58:b6',
+      'bytes': 12583
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '00:e6:66:27:eb:fa',
+      'bytes': 13491
+    },
+    {
+      'ap': '00:26:ca:f4:bf:57',
+      'client': '34:41:5d:bb:ee:32',
+      'bytes': 78529
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '58:e2:8f:80:9d:8d',
+      'bytes': 7423
+    }
+  ],
+  'client_authorised': [
+    {
+      'ap': '00:26:ca:f4:bf:4c',
+      'client': '18:81:0e:38:3f:15',
+      'stage': 2,
+      'tries': 3
+    },
+    {
+      'ap': '00:26:ca:f4:bf:4c',
+      'client': 'a4:e9:75:39:17:cb',
+      'stage': 2,
+      'tries': 1
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'b8:5d:0a:b1:ef:28',
+      'stage': 2,
+      'tries': 4
+    },
+    {
+      'ap': '00:26:ca:f4:bf:4c',
+      'client': 'a4:e9:75:40:0c:d2',
+      'stage': 2,
+      'tries': 2
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': 'a4:e9:75:40:0c:d2',
+      'stage': 1,
+      'tries': 2
+    },
+    {
+      'ap': '00:26:ca:f4:c1:da',
+      'client': '98:46:0a:0e:08:cd',
+      'stage': 2,
+      'tries': 1
+    },
+    {
+      'ap': '00:26:ca:f4:bf:57',
+      'client': 'b8:5d:0a:b1:ef:28',
+      'stage': 2,
+      'tries': 1
+    },
+    {
+      'ap': '00:26:ca:f4:bf:57',
+      'client': '34:41:5d:bb:ee:32',
+      'stage': 2,
+      'tries': 1
+    }
+  ],
+  'workspace': 'test_workspace'
+}

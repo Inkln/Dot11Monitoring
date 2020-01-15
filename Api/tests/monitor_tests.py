@@ -83,7 +83,7 @@ class TestMonitor(TestCase):
         assert user.is_sql == is_sql
         self.client.get('/logout')
 
-    '''
+'''
     def test_monitor_1(self):
         """
         non-privileged user goes to page "monitor"
@@ -176,5 +176,4 @@ class TestMonitor(TestCase):
         assert 'ok' in response.data.decode('utf-8')
         assert response.status == '200 OK'
         assert response.status_code == 200
-    '''
-    
+'''
