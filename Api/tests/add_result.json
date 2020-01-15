@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 {
   "visible_aps": {
     "00:26:88:f4:bf:4c": {
@@ -353,4 +357,8 @@
     }
   ],
   "workspace": "test_workspace"
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

@@ -140,9 +140,12 @@ class TestSQL(TestCase):
         self.login('admin', 'admin_password')
         response = self.client.post('/sql', data=json.dumps({'request': 'select * from AP'}))
         keys = set(("id", "ap_mac", "workspace", "mac_vendor", "essid", "channel", "privacy", "comment"))
+<<<<<<< Updated upstream
         # print('AP')
         # print(response.data)
         # print('='*10)
+=======
+>>>>>>> Stashed changes
         assert json.loads(response.data)['status'] == 'OK'
         assert set(json.loads(response.data)['keys']) == keys
         assert response.status == '200 OK'
@@ -155,9 +158,12 @@ class TestSQL(TestCase):
         self.login('admin', 'admin_password')
         response = self.client.post('/sql', data=json.dumps({'request': 'select * from AUTH'}))
         keys = set(("id", "ap_mac", "client_mac", "workspace", "stage", "tries"))
+<<<<<<< Updated upstream
         # print('AUTH')
         # print(response.data)
         # print('=' * 10)
+=======
+>>>>>>> Stashed changes
         assert json.loads(response.data)['status'] == 'OK'
         assert set(json.loads(response.data)['keys']) == keys
         assert response.status == '200 OK'
@@ -169,9 +175,12 @@ class TestSQL(TestCase):
         """
         self.login('admin', 'admin_password')
         response = self.client.post('/sql', data=json.dumps({'request': 'select * from CLIENT'}))
+<<<<<<< Updated upstream
         # print('CLIENT')
         # print(response.data)
         # print('=' * 10)
+=======
+>>>>>>> Stashed changes
         keys = set(("id", "client_mac", "workspace", "mac_vendor", "comment"))
         assert json.loads(response.data)['status'] == 'OK'
         assert set(json.loads(response.data)['keys']) == keys
@@ -184,9 +193,12 @@ class TestSQL(TestCase):
         """
         self.login('admin', 'admin_password')
         response = self.client.post('/sql', data=json.dumps({'request': 'select * from DATA_TRANSFER'}))
+<<<<<<< Updated upstream
         # print('DATA_TRANSFER')
         # print(response.data)
         # print('=' * 10)
+=======
+>>>>>>> Stashed changes
         keys = set(("id", "ap_mac", "client_mac", "workspace", "bytes"))
         assert json.loads(response.data)['status'] == 'OK'
         assert set(json.loads(response.data)['keys']) == keys
@@ -213,6 +225,7 @@ class TestSQL(TestCase):
         assert response.status == '200 OK'
         assert response.status_code == 200
 
+<<<<<<< Updated upstream
     def test_post_9(self):
         """
         use complicated sql query
@@ -241,6 +254,8 @@ class TestSQL(TestCase):
         # print(response.data)
         # print('=' * 10)
 
+=======
+>>>>>>> Stashed changes
     def test_add_results(self):
         """
         use add_result
@@ -259,8 +274,11 @@ class TestSQL(TestCase):
         assert len(json.loads(response.data)['data']) >= 1
         response = self.client.post('/sql', data=json.dumps({'request': 'select * from DATA_TRANSFER'}))
         assert len(json.loads(response.data)['data']) >= 1
+<<<<<<< Updated upstream
 
 
 
 
 
+=======
+>>>>>>> Stashed changes

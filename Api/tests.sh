@@ -26,7 +26,6 @@ while true; do
 done;
 
 echo 'DB IS INITIALISED, READY TO START TESTS'
-
 coverage run -m pytest -s tests/*.py
 status_code=$?
 coverage report -m --omit="tests/*","__init__.py","*/collection_service.py" --include="**/*.py" --fail-under 85
