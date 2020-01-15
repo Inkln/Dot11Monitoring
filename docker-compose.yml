@@ -31,6 +31,7 @@ services:
       - LIMITED_DATABASE_URI=postgresql://dot11viewer:dot11password@db/dot11monitor
       # default password for admin user if not exists
       - ADMIN_PASSWORD=admin
+      - DISABLE_CSRF=true
 
   test:
     depends_on:

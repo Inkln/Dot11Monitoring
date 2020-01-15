@@ -27,7 +27,13 @@ done;
 
 echo 'DB IS INITIALISED, READY TO START TESTS'
 
-coverage run -m pytest -s tests/*.py
+coverage run -m pytest -s tests/monitor_tests.py #tests/*.py
 status_code=$?
-coverage report -m --omit="tests/*","__init__.py" --include="**/*.py"
+coverage report -m --omit="tests/*","__init__.py" --include="**/*.py" --fail-under 90
+coverage_status=$?
+if [[ $coverage_status -eq 2 ]];
+then
+    echo "ERROR: Code coverage is less then expected";
+    exit 2;
+fi;
 exit $status_code

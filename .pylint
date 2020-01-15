@@ -142,7 +142,18 @@ disable=print-statement,
         missing-module-docstring,
         missing-class-docstring,
         missing-function-docstring,
-        missing-docstring
+        missing-docstring,
+        unused-wildcard-import,
+        wrong-import-order,
+        unused-import,
+        too-few-public-method,
+        cyclic-import,
+        broad-except,
+        too-few-public-methods,
+        invalid_name,
+        no-member
+
+
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
