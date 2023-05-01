@@ -1,4 +1,4 @@
-flask==1.1.1
+flask==2.3.2
 flask-login==0.4.1
 flask-sqlalchemy==2.4.1
 flask-bootstrap==3.3.7.1
